@@ -167,7 +167,6 @@ Este arquivo contém exemplos de serviços que você pode cadastrar no FilaZero 
 
 ## ⚙️ Configurações Importantes
 
-- **Intervalo entre agendamentos**: O sistema usa 30 minutos por padrão
 - **Horários de funcionamento**: Configure em Settings > Horários
 - **Serviços inativos**: Podem ser desativados sem deletar
 
