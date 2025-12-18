@@ -295,7 +295,6 @@ Para personalizar ou adicionar recursos, você pode:
 Este produto foi desenvolvido para **revenda ilimitada**.
 
 Você pode:
-- ✅ Vender quantas cópias quiser
 - ✅ Personalizar para seus clientes
 - ✅ Usar em projetos próprios
 - ✅ Modificar o código-fonte
@@ -337,4 +336,4 @@ Após instalar, recomendamos:
 ---
 
 **FilaZero** - Sistema Profissional de Agendamento Online
-Versão 1.0 - 2025
+Versão 1.8 - 2025
