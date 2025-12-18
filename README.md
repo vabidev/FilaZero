@@ -67,4 +67,4 @@ Este sistema foi desenvolvido para ser revendido como produto digital. Você pod
 
 ---
 
-**FilaZero v1.0** - Sistema Profissional de Agendamento Online
+**FilaZero v1.8** - Sistema Profissional de Agendamento Online
