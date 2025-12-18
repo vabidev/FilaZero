@@ -154,40 +154,26 @@ Sim! O sistema é totalmente responsivo e funciona em:
 ### 29. Posso criar um app mobile?
 O sistema atual é web. Para app nativo, seria necessário desenvolver usando React Native ou similar.
 
-## 💰 Comercial
-
-### 30. Posso revender o FilaZero?
-Sim! O sistema foi desenvolvido para revenda ilimitada.
-
-### 31. Preciso dar créditos ao FilaZero?
-Não é obrigatório. Você pode remover todas as referências e usar sua própria marca.
-
-### 32. Posso modificar o código?
-Sim! Você tem total liberdade para modificar e adaptar conforme suas necessidades.
-
-### 33. Quanto posso cobrar dos clientes?
-Você define o preço! Recomendamos entre R$ 297 e R$ 1.997 dependendo do pacote (instalação, personalização, treinamento).
-
 ## 🆘 Suporte
 
-### 34. Tem suporte técnico?
+### 30. Tem suporte técnico?
 O sistema é vendido "como está". Não há suporte oficial, mas a documentação é completa e o código é bem comentado.
 
-### 35. Vocês fazem customizações?
+### 31. Vocês fazem customizações?
 Este é um produto de revenda. Você é livre para contratar desenvolvedores para customizações.
 
-### 36. Tem atualizações?
+### 32. Tem atualizações?
 Esta é a versão 1.8 completa e funcional. Futuras atualizações dependeriam de nova versão do produto.
 
 ## 🚀 Recursos Avançados
 
-### 37. Como adiciono integração com WhatsApp?
+### 33. Como adiciono integração com WhatsApp?
 Você pode integrar a API do WhatsApp Business ou usar links diretos do WhatsApp para contato.
 
-### 38. Posso integrar com sistemas de pagamento?
+### 34. Posso integrar com sistemas de pagamento?
 Sim! Você pode adicionar integrações com Mercado Pago, PagSeguro, Stripe, etc. Requer conhecimento de programação.
 
-### 39. Como adiciono envio de e-mails automáticos?
+### 35. Como adiciono envio de e-mails automáticos?
 Integre serviços como:
 - SendGrid
 - Mailgun
@@ -196,7 +182,7 @@ Integre serviços como:
 
 Exemplo básico já está preparado no código para você expandir.
 
-### 40. Posso adicionar mais funcionalidades?
+### 36. Posso adicionar mais funcionalidades?
 Sim! O código é aberto para modificações. Algumas ideias:
 - Sistema de pagamento online
 - Confirmação por SMS/WhatsApp
@@ -207,30 +193,19 @@ Sim! O código é aberto para modificações. Algumas ideias:
 
 ## 📊 Relatórios
 
-### 41. Tem relatórios financeiros?
+### 37. Tem relatórios financeiros?
 A versão atual mostra agendamentos. Relatórios financeiros podem ser adicionados customizando o código.
 
-### 42. Posso exportar relatórios?
+### 38. Posso exportar relatórios?
 Você pode adicionar funcionalidade de exportação em CSV/PDF customizando o código.
 
 ## 🌍 Internacionalização
 
-### 43. Posso traduzir para outros idiomas?
+### 39. Posso traduzir para outros idiomas?
 Sim! Basta editar os textos nos arquivos HTML e JavaScript.
 
-### 44. Suporta outros fusos horários?
+### 40. Suporta outros fusos horários?
 O sistema usa o horário do servidor. Para múltiplos fusos, seria necessário adaptar o código.
-
-## ⚖️ Legal
-
-### 45. Preciso de contrato para vender?
-Recomendamos criar um contrato de prestação de serviços ao vender para proteger você e o cliente.
-
-### 46. Quem é responsável pelos dados dos clientes finais?
-Quem hospeda o sistema. Se você vende e hospeda, você é responsável pela LGPD.
-
-### 47. O sistema é compatível com LGPD?
-O sistema coleta apenas dados essenciais (nome, telefone, e-mail). Você deve criar uma política de privacidade adequada.
 
 ---
 
