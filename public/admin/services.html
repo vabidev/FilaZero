@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serviços - Admin FilaZero</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <a href="/admin/dashboard" class="sidebar-logo">📅 FilaZero</a>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard" class="sidebar-link">
+          <span class="sidebar-icon">📊</span> Dashboard
+        </a></li>
+        <li><a href="/admin/appointments" class="sidebar-link">
+          <span class="sidebar-icon">📅</span> Agendamentos
+        </a></li>
+        <li><a href="/admin/services" class="sidebar-link active">
+          <span class="sidebar-icon">✂️</span> Serviços
+        </a></li>
+        <li><a href="/admin/clients" class="sidebar-link">
+          <span class="sidebar-icon">👥</span> Clientes
+        </a></li>
+        <li><a href="/admin/settings" class="sidebar-link">
+          <span class="sidebar-icon">⚙️</span> Configurações
+        </a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="logout()">Sair</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <header class="admin-header">
+        <button class="mobile-sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        <h1 class="admin-title">Serviços</h1>
+        <div class="admin-actions">
+          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="table-container">
+          <div class="table-header">
+            <h2 class="table-title">Gerenciar Serviços</h2>
+            <button class="btn btn-accent btn-sm" onclick="openServiceModal()">+ Novo Serviço</button>
+          </div>
+          <div id="services-table"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal de Serviço -->
+  <div id="service-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Novo Serviço</h3>
+        <button class="modal-close" onclick="closeModal('service-modal')">&times;</button>
+      </div>
+      <form id="service-form" onsubmit="saveService(event)">
+        <div class="modal-body">
+          <input type="hidden" id="service-id">
+          
+          <div class="form-group">
+            <label class="form-label">Nome do Serviço *</label>
+            <input type="text" id="service-name" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <textarea id="service-description" class="form-control" rows="3"></textarea>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="form-group">
+              <label class="form-label">Duração (minutos) *</label>
+              <input type="number" id="service-duration" class="form-control" min="1" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Preço (R$)</label>
+              <input type="number" id="service-price" class="form-control" step="0.01" min="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <input type="checkbox" id="service-active" checked> Serviço ativo
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('service-modal')">Cancelar</button>
+          <button type="submit" class="btn btn-accent">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    let services = [];
+
+    async function loadServices() {
+      try {
+        const response = await fetch('/api/services');
+        services = await response.json();
+
+        const container = document.getElementById('services-table');
+
+        if (services.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">✂️</div>
+              <p>Nenhum serviço cadastrado</p>
+              <button class="btn btn-accent mt-2" onclick="openServiceModal()">Criar Primeiro Serviço</button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Duração</th>
+                <th>Preço</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${services.map(service => `
+                <tr>
+                  <td><strong>${service.name}</strong></td>
+                  <td>${service.description || '-'}</td>
+                  <td>${service.duration} min</td>
+                  <td>${service.price ? formatCurrency(service.price) : '-'}</td>
+                  <td>
+                    <span class="badge ${service.active ? 'badge-completed' : 'badge-cancelled'}">
+                      ${service.active ? 'Ativo' : 'Inativo'}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="action-btn action-btn-edit" onclick="editService(${service.id})" title="Editar">✏️</button>
+                    <button class="action-btn action-btn-delete" onclick="deleteService(${service.id})" title="Deletar">🗑️</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (error) {
+        console.error('Erro ao carregar serviços:', error);
+        showNotification('Erro ao carregar serviços', 'error');
+      }
+    }
+
+    function openServiceModal(serviceId = null) {
+      const modal = document.getElementById('service-modal');
+      const form = document.getElementById('service-form');
+      const title = document.getElementById('modal-title');
+
+      form.reset();
+
+      if (serviceId) {
+        const service = services.find(s => s.id === serviceId);
+        if (service) {
+          title.textContent = 'Editar Serviço';
+          document.getElementById('service-id').value = service.id;
+          document.getElementById('service-name').value = service.name;
+          document.getElementById('service-description').value = service.description || '';
+          document.getElementById('service-duration').value = service.duration;
+          document.getElementById('service-price').value = service.price || '';
+          document.getElementById('service-active').checked = service.active === 1;
+        }
+      } else {
+        title.textContent = 'Novo Serviço';
+        document.getElementById('service-id').value = '';
+      }
+
+      openModal('service-modal');
+    }
+
+    function editService(id) {
+      openServiceModal(id);
+    }
+
+    async function saveService(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('service-id').value;
+      const data = {
+        name: document.getElementById('service-name').value,
+        description: document.getElementById('service-description').value,
+        duration: parseInt(document.getElementById('service-duration').value),
+        price: parseFloat(document.getElementById('service-price').value) || null,
+        active: document.getElementById('service-active').checked ? 1 : 0
+      };
+
+      try {
+        const url = id ? `/api/services/${id}` : '/api/services';
+        const method = id ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification(result.message, 'success');
+          closeModal('service-modal');
+          loadServices();
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao salvar serviço:', error);
+        showNotification('Erro ao salvar serviço', 'error');
+      }
+    }
+
+    async function deleteService(id) {
+      if (!confirmDelete('Tem certeza que deseja excluir este serviço?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/services/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification(result.message, 'success');
+          loadServices();
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao deletar serviço:', error);
+        showNotification('Erro ao deletar serviço', 'error');
+      }
+    }
+
+    loadServices();
+  </script>
+</body>
+</html>

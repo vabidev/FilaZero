@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre - FilaZero</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Navegação -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo">📅 FilaZero</a>
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <ul class="navbar-menu">
+        <li><a href="/" class="navbar-link">Início</a></li>
+        <li><a href="/agendar" class="navbar-link">Agendar</a></li>
+        <li><a href="/sobre" class="navbar-link active">Sobre</a></li>
+        <li><a href="/contato" class="navbar-link">Contato</a></li>
+        <li><button class="theme-toggle" onclick="toggleTheme()">🌙</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Conteúdo -->
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <h1 class="section-title">Sobre Nós</h1>
+      
+      <div class="card">
+        <div id="about-content">
+          <p>Somos uma empresa dedicada a oferecer os melhores serviços para nossos clientes.</p>
+          <p>Nossa missão é proporcionar experiências excepcionais através de atendimento de qualidade e profissionalismo.</p>
+        </div>
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="/agendar" class="btn btn-accent">Agendar Agora</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="footer-text business-name">FilaZero</p>
+      <p class="footer-text">&copy; 2025 Todos os direitos reservados</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    async function loadAboutContent() {
+      try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+        
+        if (settings.about_text) {
+          const aboutContent = document.getElementById('about-content');
+          // Substituir quebras de linha por parágrafos
+          const paragraphs = settings.about_text.split('\n\n').filter(p => p.trim());
+          aboutContent.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+        }
+      } catch (error) {
+        console.error('Erro ao carregar conteúdo sobre:', error);
+      }
+    }
+
+    loadBusinessSettings();
+    loadAboutContent();
+  </script>
+</body>
+</html>
