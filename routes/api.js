@@ -46,6 +46,140 @@ router.get('/check-auth', (req, res) => {
   }
 });
 
+// Atualizar credenciais (usuário e senha)
+router.post('/update-credentials', async (req, res) => {
+  if (!req.session || !req.session.adminId) {
+    return res.status(401).json({ success: false, message: 'Não autenticado' });
+  }
+
+  try {
+    const { newUsername, newPassword, currentPassword } = req.body;
+    const adminId = req.session.adminId;
+
+    // Verificar se pelo menos um campo foi fornecido
+    if (!newUsername && !newPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Forneça pelo menos um campo para atualizar (usuário ou senha)' 
+      });
+    }
+
+    // Buscar admin atual
+    const admin = await db.get('SELECT * FROM admins WHERE id = ?', [adminId]);
+    
+    if (!admin) {
+      return res.status(404).json({ success: false, message: 'Administrador não encontrado' });
+    }
+
+    // Verificar senha atual
+    const validPassword = await bcrypt.compare(currentPassword, admin.password);
+    
+    if (!validPassword) {
+      return res.status(401).json({ success: false, message: 'Senha atual incorreta' });
+    }
+
+    // Validações do novo usuário
+    if (newUsername) {
+      if (newUsername.includes(' ')) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'O nome de usuário não pode conter espaços' 
+        });
+      }
+      if (newUsername.length < 3) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'O nome de usuário deve ter no mínimo 3 caracteres' 
+        });
+      }
+      if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Use apenas letras, números e underscore no usuário' 
+        });
+      }
+
+      // Verificar se o username já existe (em outro admin)
+      const existingAdmin = await db.get(
+        'SELECT * FROM admins WHERE username = ? AND id != ?', 
+        [newUsername, adminId]
+      );
+      
+      if (existingAdmin) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Este nome de usuário já está em uso' 
+        });
+      }
+    }
+
+    // Validações da nova senha
+    if (newPassword) {
+      if (newPassword.includes(' ')) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'A senha não pode conter espaços' 
+        });
+      }
+      if (newPassword.length < 6) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'A senha deve ter no mínimo 6 caracteres' 
+        });
+      }
+    }
+
+    // Preparar atualizações
+    let updateQuery = 'UPDATE admins SET ';
+    let updateParams = [];
+    let updates = [];
+    const response = { success: true };
+
+    if (newUsername) {
+      updates.push('username = ?');
+      updateParams.push(newUsername);
+      response.newUsername = newUsername;
+      req.session.username = newUsername;
+    }
+
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      updates.push('password = ?');
+      updateParams.push(hashedPassword);
+      response.passwordChanged = true;
+      response.newPassword = newPassword; // Enviar para mostrar no frontend
+    }
+
+    updateQuery += updates.join(', ') + ' WHERE id = ?';
+    updateParams.push(adminId);
+
+    // Executar atualização
+    await db.run(updateQuery, updateParams);
+
+    // Log no console do servidor com as credenciais atualizadas
+    console.log('\n' + '='.repeat(60));
+    console.log('🔐 CREDENCIAIS ADMINISTRATIVAS ATUALIZADAS COM SUCESSO!');
+    console.log('='.repeat(60));
+    if (newUsername) {
+      console.log(`📝 Novo Usuário: ${newUsername}`);
+    } else {
+      console.log(`📝 Usuário: ${admin.username} (não alterado)`);
+    }
+    if (newPassword) {
+      console.log(`🔑 Nova Senha: ${newPassword}`);
+    } else {
+      console.log('🔑 Senha: [não alterada]');
+    }
+    console.log('⚠️  IMPORTANTE: Anote suas credenciais!');
+    console.log('='.repeat(60) + '\n');
+
+    res.json(response);
+  } catch (error) {
+    console.error('Erro ao atualizar credenciais:', error);
+    res.status(500).json({ success: false, message: 'Erro ao atualizar credenciais' });
+  }
+});
+
 // ==================== CONFIGURAÇÕES ====================
 
 // Obter configurações
@@ -259,17 +393,37 @@ router.delete('/clients/:id', async (req, res) => {
 
 // ==================== AGENDAMENTOS ====================
 
-// Listar todos os agendamentos
+// Listar todos os agendamentos (com filtro por telefone para usuários públicos)
 router.get('/appointments', async (req, res) => {
-  if (!req.session || !req.session.adminId) {
-    return res.status(401).json({ success: false, message: 'Não autenticado' });
-  }
-
   try {
+    const { date, status, phone } = req.query;
+
+    // Se for busca por telefone (usuário público), não requer autenticação
+    if (phone) {
+      // Auto-completar agendamentos antes de listar
+      await autoCompleteAppointments();
+
+      const appointments = await db.all(`
+        SELECT a.*, c.name as client_name, c.phone as client_phone, 
+               s.name as service_name, s.duration, s.price
+        FROM appointments a
+        JOIN clients c ON a.client_id = c.id
+        JOIN services s ON a.service_id = s.id
+        WHERE c.phone = ?
+        ORDER BY a.appointment_date DESC, a.appointment_time DESC
+      `, [phone]);
+      
+      return res.json(appointments);
+    }
+
+    // Para admin, requer autenticação
+    if (!req.session || !req.session.adminId) {
+      return res.status(401).json({ success: false, message: 'Não autenticado' });
+    }
+
     // Auto-completar agendamentos antes de listar
     await autoCompleteAppointments();
 
-    const { date, status } = req.query;
     let query = `
       SELECT a.*, c.name as client_name, c.phone as client_phone, 
              s.name as service_name, s.duration, s.price
@@ -310,6 +464,16 @@ router.post('/appointments', async (req, res) => {
     if (!name || !phone || !service_id || !appointment_date || !appointment_time) {
       console.log('Dados incompletos');
       return res.status(400).json({ success: false, message: 'Dados incompletos' });
+    }
+
+    // Validar se a data não é anterior a hoje
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const appointmentDate = new Date(appointment_date + 'T00:00:00');
+    
+    if (appointmentDate < today) {
+      console.log('Data inválida - anterior a hoje');
+      return res.status(400).json({ success: false, message: 'Não é possível agendar em datas passadas' });
     }
 
     // Verificar se o horário está disponível

@@ -8,12 +8,25 @@ let bookingData = {
 
 let currentStep = 1;
 let services = [];
+let dateValidationTimeout = null;
 
 // Inicializar
 document.addEventListener('DOMContentLoaded', () => {
   loadServices();
   setMinDate();
   loadBusinessSettings();
+  
+  // Adicionar listener para o campo de data
+  const dateInput = document.getElementById('appointment-date');
+  // Usar 'blur' para validar só quando sair do campo
+  dateInput.addEventListener('blur', loadAvailableTimes);
+  // Também validar quando selecionar do calendário
+  dateInput.addEventListener('change', function() {
+    // Só valida se o campo perdeu o foco ou se a data está completa
+    if (this.value.length === 10) {
+      loadAvailableTimes();
+    }
+  });
 });
 
 // Definir data mínima como hoje
@@ -70,6 +83,38 @@ async function loadAvailableTimes() {
   const date = dateInput.value;
 
   if (!date || !bookingData.service) {
+    document.getElementById('time-slots').innerHTML = '';
+    return;
+  }
+
+  // Verificar se a data está completa (formato YYYY-MM-DD tem 10 caracteres)
+  if (date.length < 10) {
+    document.getElementById('time-slots').innerHTML = '';
+    return;
+  }
+
+  // Extrair o ano da data - se for menor que 2020, usuário ainda está digitando
+  const year = parseInt(date.split('-')[0]);
+  if (year < 2020) {
+    document.getElementById('time-slots').innerHTML = '';
+    return;
+  }
+
+  // Validar se a data não é anterior a hoje
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const selectedDate = new Date(date + 'T00:00:00');
+  
+  // Verificar se a data é válida - silenciosamente retorna se inválida
+  if (isNaN(selectedDate.getTime())) {
+    document.getElementById('time-slots').innerHTML = '';
+    return;
+  }
+  
+  // Só mostra erro de data passada se a data estiver completa e válida
+  if (selectedDate < today) {
+    showNotification('Não é possível agendar em datas passadas', 'error');
+    document.getElementById('time-slots').innerHTML = '<p class="text-muted">Selecione uma data futura.</p>';
     return;
   }
 
@@ -261,6 +306,17 @@ async function confirmBooking() {
     console.log('Resultado:', result);
 
     if (result.success) {
+      // Salvar telefone do usuário no LocalStorage
+      setCurrentUserPhone(bookingData.client.phone);
+      
+      // Adicionar notificação de pedido pendente
+      addNotification(bookingData.client.phone, 'pending', {
+        id: result.id,
+        serviceName: bookingData.service.name,
+        date: bookingData.date,
+        time: bookingData.time
+      });
+      
       changeStep(5);
     } else {
       showNotification(result.message || 'Erro ao criar agendamento', 'error');

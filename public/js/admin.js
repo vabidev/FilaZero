@@ -36,7 +36,19 @@ async function logout() {
 // Toggle sidebar mobile
 function toggleSidebar() {
   const sidebar = document.querySelector('.admin-sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  
   sidebar.classList.toggle('active');
+  
+  // Criar overlay se não existir
+  if (!overlay && sidebar.classList.contains('active')) {
+    const newOverlay = document.createElement('div');
+    newOverlay.className = 'sidebar-overlay';
+    newOverlay.onclick = toggleSidebar;
+    document.body.appendChild(newOverlay);
+  } else if (overlay) {
+    overlay.remove();
+  }
 }
 
 // Modal functions

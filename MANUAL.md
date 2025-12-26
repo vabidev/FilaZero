@@ -336,4 +336,4 @@ Após instalar, recomendamos:
 ---
 
 **FilaZero** - Sistema Profissional de Agendamento Online
-Versão 1.8 - 2025
+Versão 2.1 - 2025

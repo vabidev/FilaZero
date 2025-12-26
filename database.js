@@ -114,8 +114,10 @@ class Database {
     const defaultUsername = 'admin';
     const defaultPassword = 'admin123';
 
-    this.db.get('SELECT * FROM admins WHERE username = ?', [defaultUsername], (err, row) => {
+    // Verifica se existe QUALQUER admin no sistema
+    this.db.get('SELECT * FROM admins LIMIT 1', (err, row) => {
       if (!row) {
+        // Só cria o admin padrão se não houver NENHUM admin no sistema
         bcrypt.hash(defaultPassword, 10, (err, hash) => {
           this.db.run(
             'INSERT INTO admins (username, password) VALUES (?, ?)',

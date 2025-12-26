@@ -163,7 +163,7 @@ O sistema é vendido "como está". Não há suporte oficial, mas a documentaçã
 Este é um produto de revenda. Você é livre para contratar desenvolvedores para customizações.
 
 ### 32. Tem atualizações?
-Esta é a versão 1.8 completa e funcional. Futuras atualizações dependeriam de nova versão do produto.
+Esta é a versão 2.1 completa e funcional. Futuras atualizações dependeriam de nova versão do produto.
 
 ## 🚀 Recursos Avançados
 

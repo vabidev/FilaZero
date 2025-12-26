@@ -60,24 +60,24 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Descrição</label>
+              <label class="form-label">Descrição (opcional)</label>
               <input type="text" id="business-description" class="form-control">
             </div>
 
             <div class="grid grid-2">
               <div class="form-group">
-                <label class="form-label">Telefone</label>
+                <label class="form-label">Telefone (opcional)</label>
                 <input type="tel" id="business-phone" class="form-control">
               </div>
 
               <div class="form-group">
-                <label class="form-label">E-mail</label>
+                <label class="form-label">E-mail (opcional)</label>
                 <input type="email" id="business-email" class="form-control">
               </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Endereço</label>
+              <label class="form-label">Endereço (opcional)</label>
               <input type="text" id="business-address" class="form-control">
             </div>
           </div>
@@ -87,7 +87,7 @@
             <h3 class="mb-3">Página Sobre</h3>
             
             <div class="form-group">
-              <label class="form-label">Texto sobre o negócio</label>
+              <label class="form-label">Texto sobre o negócio (opcional)</label>
               <textarea id="about-text" class="form-control" rows="6" 
                 placeholder="Descreva seu negócio, missão e valores..."></textarea>
               <small class="text-muted">Este texto aparecerá na página "Sobre" do site</small>
@@ -171,6 +171,58 @@
           <!-- Botões -->
           <div class="text-right">
             <button type="submit" class="btn btn-accent">Salvar Configurações</button>
+          </div>
+        </form>
+
+        <!-- Segurança e Acesso -->
+        <form id="credentials-form" onsubmit="updateCredentials(event)">
+          <div class="card mt-4">
+            <h3 class="mb-3">🔐 Segurança e Acesso</h3>
+            <p class="text-muted mb-3">Altere suas credenciais de acesso ao painel administrativo</p>
+            
+            <div class="form-group">
+              <label class="form-label">Novo Usuário</label>
+              <input type="text" id="new-username" class="form-control" placeholder="Digite o novo nome de usuário">
+              <small class="text-muted">
+                ⚠️ <strong>Importante:</strong>
+                <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
+                  <li>Não use espaços no nome de usuário</li>
+                  <li>Mínimo de 3 caracteres</li>
+                  <li>Use apenas letras, números e underscore (_)</li>
+                  <li>Evite caracteres especiais</li>
+                </ul>
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nova Senha</label>
+              <input type="password" id="new-password" class="form-control" placeholder="Digite a nova senha">
+              <small class="text-muted">
+                ⚠️ <strong>Requisitos de segurança:</strong>
+                <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
+                  <li>Não use espaços na senha</li>
+                  <li>Mínimo de 6 caracteres</li>
+                  <li>Recomendado: combine letras maiúsculas, minúsculas e números</li>
+                  <li>Use uma senha forte e única</li>
+                  <li>Anote suas credenciais em local seguro!</li>
+                </ul>
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirmar Nova Senha</label>
+              <input type="password" id="confirm-password" class="form-control" placeholder="Digite a senha novamente">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Senha Atual (para confirmar alterações)</label>
+              <input type="password" id="current-password" class="form-control" placeholder="Digite sua senha atual" required>
+              <small class="text-muted">Necessário para confirmar sua identidade</small>
+            </div>
+
+            <div class="text-right">
+              <button type="submit" class="btn btn-primary">Atualizar Credenciais</button>
+            </div>
           </div>
         </form>
       </div>
@@ -339,6 +391,105 @@
       } catch (error) {
         console.error('Erro ao salvar configurações:', error);
         showNotification('Erro ao salvar configurações', 'error');
+      }
+    }
+
+    async function updateCredentials(event) {
+      event.preventDefault();
+
+      const newUsername = document.getElementById('new-username').value.trim();
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const currentPassword = document.getElementById('current-password').value;
+
+      // Validações
+      if (!currentPassword) {
+        showNotification('Digite sua senha atual para confirmar', 'error');
+        return;
+      }
+
+      if (!newUsername && !newPassword) {
+        showNotification('Preencha pelo menos um campo (usuário ou senha)', 'error');
+        return;
+      }
+
+      // Validar novo usuário
+      if (newUsername) {
+        if (newUsername.includes(' ')) {
+          showNotification('❌ O nome de usuário não pode conter espaços!', 'error');
+          return;
+        }
+        if (newUsername.length < 3) {
+          showNotification('❌ O nome de usuário deve ter no mínimo 3 caracteres!', 'error');
+          return;
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+          showNotification('❌ Use apenas letras, números e underscore no usuário!', 'error');
+          return;
+        }
+      }
+
+      // Validar nova senha
+      if (newPassword) {
+        if (newPassword.includes(' ')) {
+          showNotification('❌ A senha não pode conter espaços!', 'error');
+          return;
+        }
+        if (newPassword.length < 6) {
+          showNotification('❌ A senha deve ter no mínimo 6 caracteres!', 'error');
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showNotification('❌ As senhas não coincidem!', 'error');
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch('/api/update-credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            newUsername: newUsername || undefined,
+            newPassword: newPassword || undefined,
+            currentPassword: currentPassword
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('✅ Credenciais atualizadas com sucesso!', 'success');
+          
+          // Exibir mensagem no terminal (console do navegador)
+          console.log('\n' + '='.repeat(60));
+          console.log('🔐 CREDENCIAIS ATUALIZADAS COM SUCESSO!');
+          console.log('='.repeat(60));
+          if (result.newUsername) {
+            console.log(`📝 Novo Usuário: ${result.newUsername}`);
+          }
+          if (result.passwordChanged && result.newPassword) {
+            console.log(`🔑 Nova Senha: ${result.newPassword}`);
+          }
+          console.log('⚠️  IMPORTANTE: Anote suas novas credenciais!');
+          console.log('='.repeat(60) + '\n');
+          
+          // Limpar campos
+          document.getElementById('new-username').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('confirm-password').value = '';
+          document.getElementById('current-password').value = '';
+
+          // Redirecionar para login após 2 segundos
+          setTimeout(() => {
+            window.location.href = '/admin/login';
+          }, 2000);
+        } else {
+          showNotification('❌ ' + result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar credenciais:', error);
+        showNotification('❌ Erro ao atualizar credenciais', 'error');
       }
     }
 

@@ -11,14 +11,34 @@
   <nav class="navbar">
     <div class="navbar-container">
       <a href="/" class="navbar-logo">📅 FilaZero</a>
-      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      <div class="navbar-actions-mobile">
+        <button class="notification-bell-mobile" onclick="openNotifications(event)" title="Notificações">
+          🔔
+          <span id="notification-badge-mobile" class="notification-badge"></span>
+        </button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+      </div>
       <ul class="navbar-menu">
         <li><a href="/" class="navbar-link active">Início</a></li>
         <li><a href="/agendar" class="navbar-link">Agendar</a></li>
         <li><a href="/sobre" class="navbar-link">Sobre</a></li>
         <li><a href="/contato" class="navbar-link">Contato</a></li>
+        <li class="notification-desktop">
+          <button class="notification-bell" onclick="openNotifications(event)" title="Notificações">
+            🔔
+            <span id="notification-badge" class="notification-badge"></span>
+          </button>
+        </li>
         <li><button class="theme-toggle" onclick="toggleTheme()">🌙</button></li>
       </ul>
+      <!-- Dropdown de Notificações -->
+      <div id="notifications-dropdown" class="notifications-dropdown">
+        <div class="notifications-header">
+          <h3 class="notifications-title">Notificações</h3>
+          <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Marcar todas como lidas</button>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+      </div>
     </div>
   </nav>
 
@@ -95,7 +115,17 @@
   </footer>
 
   <script src="/js/main.js"></script>
+  <script src="/js/notifications.js"></script>
   <script>
+    // Marcar todas notificações como lidas
+    function markAllNotificationsAsRead() {
+      const phone = getCurrentUserPhone();
+      if (phone) {
+        markAllAsRead(phone);
+        renderNotifications();
+      }
+    }
+
     // Carregar serviços na página inicial
     async function loadServices() {
       try {

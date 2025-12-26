@@ -36,6 +36,7 @@ Acesse:
 - 📅 Controle de agendamentos
 - 👥 Lista de clientes
 - ⚙️ Configurações personalizáveis
+- 🔐 Alteração de credenciais (usuário/senha) - **NOVO v2.1**
 
 ## 📖 Documentação Completa
 
@@ -67,4 +68,4 @@ Este sistema foi desenvolvido para ser revendido como produto digital. Você pod
 
 ---
 
-**FilaZero v1.8** - Sistema Profissional de Agendamento Online
+**FilaZero v2.1** - Sistema Profissional de Agendamento Online

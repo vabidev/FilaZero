@@ -1,6 +1,6 @@
 {
   "name": "filazero",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "Sistema completo de agendamento online para profissionais autônomos",
   "main": "server.js",
   "scripts": {

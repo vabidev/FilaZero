@@ -33,7 +33,7 @@ app.listen(config.port, () => {
   console.log(`
 ╔═══════════════════════════════════════╗
 ║        FilaZero - Sistema de          ║
-║      Agendamento Online v1.0          ║
+║      Agendamento Online v2.1          ║
 ╠═══════════════════════════════════════╣
 ║  Servidor rodando em:                 ║
 ║  http://localhost:${config.port}                ║

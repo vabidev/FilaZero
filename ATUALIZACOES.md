@@ -1,5 +1,31 @@
 # Atualizações Recentes - FilaZero
 
+## 🆕 Versão 2.1 - 22/12/2025
+
+### 🔐 Alteração de Credenciais no Painel Admin
+**Nova Funcionalidade:** Agora é possível alterar o usuário e senha diretamente pelo painel administrativo!
+
+**Localização:** Admin → Configurações → Segurança e Acesso
+
+**Recursos:**
+- ✅ Alterar nome de usuário
+- ✅ Alterar senha
+- ✅ Validações completas (sem espaços, tamanho mínimo, caracteres permitidos)
+- ✅ Confirmação com senha atual
+- ✅ Logs automáticos no console do navegador e terminal do servidor
+- ✅ Avisos de segurança e orientações
+
+**Validações Implementadas:**
+- ❌ Não permite espaços no usuário ou senha
+- ✅ Usuário: mínimo 3 caracteres, apenas letras, números e underscore
+- ✅ Senha: mínimo 6 caracteres, recomenda combinação de maiúsculas, minúsculas e números
+- ✅ Confirmação de senha obrigatória
+- ✅ Senha atual necessária para confirmar alterações
+
+**Detalhes:** Veja [ATUALIZACAO-CREDENCIAIS.md](ATUALIZACAO-CREDENCIAIS.md)
+
+---
+
 ## Correções e Melhorias Implementadas
 
 ### 1. ✅ Erro ao Confirmar Agendamento

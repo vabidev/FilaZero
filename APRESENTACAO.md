@@ -103,8 +103,7 @@
 
 ---
 
-**FilaZero v1.8**  
+**FilaZero v2.1**  
 *Sistema Profissional de Agendamento Online*  
-*Pronto para Revenda no Mercado Livre*
 
 🚀 **Comece a Lucrar Hoje!**
