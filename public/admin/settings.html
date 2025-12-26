@@ -6,30 +6,30 @@
   <title>Configurações - Admin FilaZero</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/icons.css">
 </head>
 <body>
   <div class="admin-layout">
-    <!-- Sidebar -->
     <aside class="admin-sidebar">
       <div class="sidebar-header">
-        <a href="/admin/dashboard" class="sidebar-logo">📅 FilaZero</a>
+        <a href="/admin/dashboard" class="sidebar-logo"><i class="icon-calendar"></i> FilaZero</a>
       </div>
       
       <ul class="sidebar-menu">
         <li><a href="/admin/dashboard" class="sidebar-link">
-          <span class="sidebar-icon">📊</span> Dashboard
+          <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
         </a></li>
         <li><a href="/admin/appointments" class="sidebar-link">
-          <span class="sidebar-icon">📅</span> Agendamentos
+          <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
         </a></li>
         <li><a href="/admin/services" class="sidebar-link">
-          <span class="sidebar-icon">✂️</span> Serviços
+          <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
         </a></li>
         <li><a href="/admin/clients" class="sidebar-link">
-          <span class="sidebar-icon">👥</span> Clientes
+          <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
         </a></li>
         <li><a href="/admin/settings" class="sidebar-link active">
-          <span class="sidebar-icon">⚙️</span> Configurações
+          <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
         </a></li>
       </ul>
 
@@ -38,13 +38,12 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="admin-main">
       <header class="admin-header">
-        <button class="mobile-sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        <button class="mobile-sidebar-toggle" onclick="toggleSidebar()"><i class="icon-menu"></i></button>
         <h1 class="admin-title">Configurações</h1>
         <div class="admin-actions">
-          <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+          <button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button>
         </div>
       </header>
 
@@ -177,14 +176,14 @@
         <!-- Segurança e Acesso -->
         <form id="credentials-form" onsubmit="updateCredentials(event)">
           <div class="card mt-4">
-            <h3 class="mb-3">🔐 Segurança e Acesso</h3>
+            <h3 class="mb-3"><i class="icon-settings"></i> Segurança e Acesso</h3>
             <p class="text-muted mb-3">Altere suas credenciais de acesso ao painel administrativo</p>
             
             <div class="form-group">
               <label class="form-label">Novo Usuário</label>
               <input type="text" id="new-username" class="form-control" placeholder="Digite o novo nome de usuário">
               <small class="text-muted">
-                ⚠️ <strong>Importante:</strong>
+                <strong>Importante:</strong>
                 <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
                   <li>Não use espaços no nome de usuário</li>
                   <li>Mínimo de 3 caracteres</li>
@@ -198,7 +197,7 @@
               <label class="form-label">Nova Senha</label>
               <input type="password" id="new-password" class="form-control" placeholder="Digite a nova senha">
               <small class="text-muted">
-                ⚠️ <strong>Requisitos de segurança:</strong>
+                <strong>Requisitos de segurança:</strong>
                 <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
                   <li>Não use espaços na senha</li>
                   <li>Mínimo de 6 caracteres</li>
@@ -416,15 +415,15 @@
       // Validar novo usuário
       if (newUsername) {
         if (newUsername.includes(' ')) {
-          showNotification('❌ O nome de usuário não pode conter espaços!', 'error');
+          showNotification('O nome de usuário não pode conter espaços!', 'error');
           return;
         }
         if (newUsername.length < 3) {
-          showNotification('❌ O nome de usuário deve ter no mínimo 3 caracteres!', 'error');
+          showNotification('O nome de usuário deve ter no mínimo 3 caracteres!', 'error');
           return;
         }
         if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
-          showNotification('❌ Use apenas letras, números e underscore no usuário!', 'error');
+          showNotification('Use apenas letras, números e underscore no usuário!', 'error');
           return;
         }
       }
@@ -432,15 +431,15 @@
       // Validar nova senha
       if (newPassword) {
         if (newPassword.includes(' ')) {
-          showNotification('❌ A senha não pode conter espaços!', 'error');
+          showNotification('A senha não pode conter espaços!', 'error');
           return;
         }
         if (newPassword.length < 6) {
-          showNotification('❌ A senha deve ter no mínimo 6 caracteres!', 'error');
+          showNotification('A senha deve ter no mínimo 6 caracteres!', 'error');
           return;
         }
         if (newPassword !== confirmPassword) {
-          showNotification('❌ As senhas não coincidem!', 'error');
+          showNotification('As senhas não coincidem!', 'error');
           return;
         }
       }
@@ -459,19 +458,19 @@
         const result = await response.json();
 
         if (result.success) {
-          showNotification('✅ Credenciais atualizadas com sucesso!', 'success');
+          showNotification('Credenciais atualizadas com sucesso!', 'success');
           
           // Exibir mensagem no terminal (console do navegador)
           console.log('\n' + '='.repeat(60));
-          console.log('🔐 CREDENCIAIS ATUALIZADAS COM SUCESSO!');
+          console.log('CREDENCIAIS ATUALIZADAS COM SUCESSO!');
           console.log('='.repeat(60));
           if (result.newUsername) {
-            console.log(`📝 Novo Usuário: ${result.newUsername}`);
+            console.log(`Novo Usuário: ${result.newUsername}`);
           }
           if (result.passwordChanged && result.newPassword) {
-            console.log(`🔑 Nova Senha: ${result.newPassword}`);
+            console.log(`Nova Senha: ${result.newPassword}`);
           }
-          console.log('⚠️  IMPORTANTE: Anote suas novas credenciais!');
+          console.log('IMPORTANTE: Anote suas novas credenciais!');
           console.log('='.repeat(60) + '\n');
           
           // Limpar campos
@@ -485,11 +484,11 @@
             window.location.href = '/admin/login';
           }, 2000);
         } else {
-          showNotification('❌ ' + result.message, 'error');
+          showNotification(result.message, 'error');
         }
       } catch (error) {
         console.error('Erro ao atualizar credenciais:', error);
-        showNotification('❌ Erro ao atualizar credenciais', 'error');
+        showNotification('Erro ao atualizar credenciais', 'error');
       }
     }
 

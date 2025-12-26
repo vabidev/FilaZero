@@ -1,145 +1,98 @@
-// Gerenciamento de tema (claro/escuro)
 function initTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  updateThemeIcon(savedTheme);
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
 }
 
 function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  updateThemeIcon(newTheme);
+  const curr = document.documentElement.getAttribute('data-theme');
+  const next = curr === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeIcon(next);
 }
 
 function updateThemeIcon(theme) {
-  const themeToggle = document.querySelector('.theme-toggle');
-  if (themeToggle) {
-    themeToggle.innerHTML = theme === 'light' ? '🌙' : '☀️';
-  }
+  const btn = document.querySelector('.theme-toggle');
+  if (btn) btn.innerHTML = theme === 'light' ? '<i class="icon-moon"></i>' : '<i class="icon-sun"></i>';
 }
 
-// Menu mobile
 function toggleMobileMenu() {
-  const menu = document.querySelector('.navbar-menu');
-  menu.classList.toggle('active');
+  document.querySelector('.navbar-menu')?.classList.toggle('active');
 }
 
-// Fechar menu ao clicar em link
 document.addEventListener('DOMContentLoaded', () => {
-  const menuLinks = document.querySelectorAll('.navbar-link');
-  menuLinks.forEach(link => {
+  document.querySelectorAll('.navbar-link').forEach(link => {
     link.addEventListener('click', () => {
-      const menu = document.querySelector('.navbar-menu');
-      if (menu.classList.contains('active')) {
-        menu.classList.remove('active');
-      }
+      document.querySelector('.navbar-menu')?.classList.remove('active');
     });
   });
 });
 
-// Carregar configurações do negócio
 async function loadBusinessSettings() {
   try {
-    const response = await fetch('/api/settings');
-    const settings = await response.json();
+    const res = await fetch('/api/settings');
+    const data = await res.json();
     
-    // Atualizar título da página
-    if (settings.business_name) {
-      document.title = settings.business_name;
-      const logoElements = document.querySelectorAll('.navbar-logo, .business-name');
-      logoElements.forEach(el => {
-        if (el) el.textContent = settings.business_name;
+    if (data.business_name) {
+      document.title = data.business_name;
+      document.querySelectorAll('.navbar-logo, .business-name').forEach(el => {
+        el.textContent = data.business_name;
       });
     }
 
-    // Atualizar descrição
-    if (settings.business_description) {
-      const descElements = document.querySelectorAll('.business-description');
-      descElements.forEach(el => {
-        if (el) el.textContent = settings.business_description;
+    if (data.business_description) {
+      document.querySelectorAll('.business-description').forEach(el => {
+        el.textContent = data.business_description;
       });
     }
 
-    return settings;
-  } catch (error) {
-    console.error('Erro ao carregar configurações:', error);
+    return data;
+  } catch (err) {
+    console.error('Erro ao carregar configurações:', err);
     return null;
   }
 }
 
-// Formatar moeda
 function formatCurrency(value) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value);
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 }
 
-// Formatar data
-function formatDate(dateString) {
-  const date = new Date(dateString + 'T00:00:00');
-  return new Intl.DateTimeFormat('pt-BR').format(date);
+function formatDate(str) {
+  return new Intl.DateTimeFormat('pt-BR').format(new Date(str + 'T00:00:00'));
 }
 
-// Formatar hora
-function formatTime(timeString) {
-  return timeString.substring(0, 5);
+function formatTime(str) {
+  return str.substring(0, 5);
 }
 
-// Mostrar notificação
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  notification.textContent = message;
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    background-color: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--accent-primary)'};
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px var(--shadow);
-    z-index: 9999;
-    animation: slideInRight 0.3s ease;
+function showNotification(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = 'toast-notification';
+  el.textContent = msg;
+  
+  const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--accent-primary)' };
+  el.style.cssText = `
+    position: fixed; top: 16px; right: 16px;
+    padding: 12px 20px; background: ${colors[type] || colors.info};
+    color: #fff; border-radius: 6px; z-index: 999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transform: translateX(100%); opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
   `;
 
-  document.body.appendChild(notification);
-
+  document.body.appendChild(el);
+  
+  requestAnimationFrame(() => {
+    el.style.transform = 'translateX(0)';
+    el.style.opacity = '1';
+  });
+  
   setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.3s ease';
-    setTimeout(() => notification.remove(), 300);
+    el.style.transform = 'translateX(100%)';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 300);
   }, 3000);
 }
 
-// Animações de entrada
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideInRight {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideOutRight {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(style);
-
-// Inicializar tema ao carregar
 initTheme();

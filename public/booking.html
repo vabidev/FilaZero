@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agendar - FilaZero</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/icons.css">
   <style>
     .booking-container {
       max-width: 600px;
@@ -151,16 +152,15 @@
   </style>
 </head>
 <body>
-  <!-- Navegação -->
   <nav class="navbar">
     <div class="navbar-container">
-      <a href="/" class="navbar-logo">📅 FilaZero</a>
+      <a href="/" class="navbar-logo"><i class="icon-calendar"></i> FilaZero</a>
       <div class="navbar-actions-mobile">
         <button class="notification-bell-mobile" onclick="openNotifications(event)" title="Notificações">
-          🔔
+          <i class="icon-bell"></i>
           <span id="notification-badge-mobile" class="notification-badge"></span>
         </button>
-        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="icon-menu"></i></button>
       </div>
       <ul class="navbar-menu">
         <li><a href="/" class="navbar-link">Início</a></li>
@@ -169,13 +169,12 @@
         <li><a href="/contato" class="navbar-link">Contato</a></li>
         <li class="notification-desktop">
           <button class="notification-bell" onclick="openNotifications(event)" title="Notificações">
-            🔔
+            <i class="icon-bell"></i>
             <span id="notification-badge" class="notification-badge"></span>
           </button>
         </li>
-        <li><button class="theme-toggle" onclick="toggleTheme()">🌙</button></li>
+        <li><button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button></li>
       </ul>
-      <!-- Dropdown de Notificações -->
       <div id="notifications-dropdown" class="notifications-dropdown">
         <div class="notifications-header">
           <h3 class="notifications-title">Notificações</h3>
@@ -186,7 +185,6 @@
     </div>
   </nav>
 
-  <!-- Conteúdo -->
   <section class="section">
     <div class="container booking-container">
       <h1 class="section-title">Fazer Agendamento</h1>
@@ -277,10 +275,10 @@
       <!-- Mensagem de Sucesso -->
       <div class="booking-step" data-step="5">
         <div class="success-message">
-          <div class="success-icon">✅</div>
+          <div class="success-icon"><i class="icon-check"></i></div>
           <h2>Agendamento realizado com sucesso!</h2>
           <p class="text-muted mt-2">Você receberá uma confirmação em breve.</p>
-          <p class="text-muted mt-2">Clique no sino 🔔 no menu para acompanhar suas notificações!</p>
+          <p class="text-muted mt-2">Clique no sino no menu para acompanhar suas notificações!</p>
           <a href="/" class="btn btn-accent mt-3">Voltar ao Início</a>
         </div>
       </div>

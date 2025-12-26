@@ -1,87 +1,71 @@
-// Verificar autenticação
 async function checkAuth() {
   try {
-    const response = await fetch('/api/check-auth');
-    const result = await response.json();
+    const res = await fetch('/api/check-auth');
+    const data = await res.json();
     
-    if (!result.authenticated) {
+    if (!data.authenticated) {
       window.location.href = '/admin/login';
       return false;
     }
     
-    // Atualizar nome do usuário se houver elemento
-    const usernameElement = document.getElementById('admin-username');
-    if (usernameElement && result.username) {
-      usernameElement.textContent = result.username;
-    }
+    const userEl = document.getElementById('admin-username');
+    if (userEl && data.username) userEl.textContent = data.username;
     
     return true;
-  } catch (error) {
-    console.error('Erro ao verificar autenticação:', error);
+  } catch (e) {
     window.location.href = '/admin/login';
     return false;
   }
 }
 
-// Logout
 async function logout() {
-  try {
-    await fetch('/api/logout', { method: 'POST' });
-    window.location.href = '/admin/login';
-  } catch (error) {
-    console.error('Erro ao fazer logout:', error);
-  }
+  await fetch('/api/logout', { method: 'POST' }).catch(() => {});
+  window.location.href = '/admin/login';
 }
 
-// Toggle sidebar mobile
 function toggleSidebar() {
   const sidebar = document.querySelector('.admin-sidebar');
   const overlay = document.querySelector('.sidebar-overlay');
   
   sidebar.classList.toggle('active');
   
-  // Criar overlay se não existir
   if (!overlay && sidebar.classList.contains('active')) {
-    const newOverlay = document.createElement('div');
-    newOverlay.className = 'sidebar-overlay';
-    newOverlay.onclick = toggleSidebar;
-    document.body.appendChild(newOverlay);
+    const el = document.createElement('div');
+    el.className = 'sidebar-overlay';
+    el.onclick = toggleSidebar;
+    document.body.appendChild(el);
   } else if (overlay) {
     overlay.remove();
   }
 }
 
-// Modal functions
-function openModal(modalId) {
-  const modal = document.getElementById(modalId);
+function openModal(id) {
+  const modal = document.getElementById(id);
   if (modal) {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 }
 
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
+function closeModal(id) {
+  const modal = document.getElementById(id);
   if (modal) {
     modal.classList.remove('active');
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = '';
   }
 }
 
-// Fechar modal ao clicar fora
-window.addEventListener('click', (event) => {
-  if (event.target.classList.contains('modal')) {
-    event.target.classList.remove('active');
-    document.body.style.overflow = 'auto';
+window.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal')) {
+    e.target.classList.remove('active');
+    document.body.style.overflow = '';
   }
 });
 
-// Confirmar exclusão
-function confirmDelete(message) {
-  return confirm(message || 'Tem certeza que deseja excluir este item?');
+function confirmDelete(msg) {
+  return confirm(msg || 'Tem certeza que deseja excluir?');
 }
 
-// Inicializar ao carregar
 document.addEventListener('DOMContentLoaded', () => {
   checkAuth();
   initTheme();

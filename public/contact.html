@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contato - FilaZero</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/icons.css">
 </head>
 <body>
-  <!-- Navegação -->
   <nav class="navbar">
     <div class="navbar-container">
-      <a href="/" class="navbar-logo">📅 FilaZero</a>
+      <a href="/" class="navbar-logo"><i class="icon-calendar"></i> FilaZero</a>
       <div class="navbar-actions-mobile">
         <button class="notification-bell-mobile" onclick="openNotifications(event)" title="Notificações">
-          🔔
+          <i class="icon-bell"></i>
           <span id="notification-badge-mobile" class="notification-badge"></span>
         </button>
-        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="icon-menu"></i></button>
       </div>
       <ul class="navbar-menu">
         <li><a href="/" class="navbar-link">Início</a></li>
@@ -25,13 +25,12 @@
         <li><a href="/contato" class="navbar-link active">Contato</a></li>
         <li class="notification-desktop">
           <button class="notification-bell" onclick="openNotifications(event)" title="Notificações">
-            🔔
+            <i class="icon-bell"></i>
             <span id="notification-badge" class="notification-badge"></span>
           </button>
         </li>
-        <li><button class="theme-toggle" onclick="toggleTheme()">🌙</button></li>
+        <li><button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button></li>
       </ul>
-      <!-- Dropdown de Notificações -->
       <div id="notifications-dropdown" class="notifications-dropdown">
         <div class="notifications-header">
           <h3 class="notifications-title">Notificações</h3>
@@ -42,7 +41,6 @@
     </div>
   </nav>
 
-  <!-- Conteúdo -->
   <section class="section">
     <div class="container">
       <div class="section-header">
@@ -54,17 +52,17 @@
         <!-- Informações de Contato -->
         <div>
           <div class="card">
-            <h3 class="card-title">📞 Telefone</h3>
+            <h3 class="card-title"><i class="icon-phone"></i> Telefone</h3>
             <p class="card-text" id="business-phone">(11) 9999-9999</p>
           </div>
 
           <div class="card mt-3">
-            <h3 class="card-title">📧 E-mail</h3>
+            <h3 class="card-title"><i class="icon-mail"></i> E-mail</h3>
             <p class="card-text" id="business-email">contato@filazero.com</p>
           </div>
 
           <div class="card mt-3">
-            <h3 class="card-title">📍 Endereço</h3>
+            <h3 class="card-title"><i class="icon-map-pin"></i> Endereço</h3>
             <p class="card-text" id="business-address">-</p>
           </div>
         </div>
@@ -100,7 +98,6 @@
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer-container">
       <p class="footer-text business-name">FilaZero</p>
