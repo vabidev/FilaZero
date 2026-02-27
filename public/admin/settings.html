@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Configurações - Admin FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/icons.css">
 </head>
+
 <body>
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-header">
         <a href="/admin/dashboard" class="sidebar-logo"><i class="icon-calendar"></i> FilaZero</a>
       </div>
-      
+
       <ul class="sidebar-menu">
         <li><a href="/admin/dashboard" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
+          </a></li>
         <li><a href="/admin/appointments" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
+          </a></li>
         <li><a href="/admin/services" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
+          </a></li>
         <li><a href="/admin/clients" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
+          </a></li>
         <li><a href="/admin/settings" class="sidebar-link active">
-          <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
+          </a></li>
       </ul>
 
       <div class="sidebar-footer">
@@ -52,7 +57,7 @@
           <!-- Informações do Negócio -->
           <div class="card mb-4">
             <h3 class="mb-3">Informações do Negócio</h3>
-            
+
             <div class="form-group">
               <label class="form-label">Nome do Negócio</label>
               <input type="text" id="business-name" class="form-control" required>
@@ -79,15 +84,21 @@
               <label class="form-label">Endereço (opcional)</label>
               <input type="text" id="business-address" class="form-control">
             </div>
+
+            <div class="form-group">
+              <label class="form-label">Número de Funcionários</label>
+              <input type="number" id="employee-count" class="form-control" min="1" value="1" required>
+              <small class="text-muted">Define quantos clientes podem ser atendidos ao mesmo tempo. Ex: 2 funcionários = até 2 agendamentos simultâneos</small>
+            </div>
           </div>
 
           <!-- Página Sobre -->
           <div class="card mb-4">
             <h3 class="mb-3">Página Sobre</h3>
-            
+
             <div class="form-group">
               <label class="form-label">Texto sobre o negócio (opcional)</label>
-              <textarea id="about-text" class="form-control" rows="6" 
+              <textarea id="about-text" class="form-control" rows="6"
                 placeholder="Descreva seu negócio, missão e valores..."></textarea>
               <small class="text-muted">Este texto aparecerá na página "Sobre" do site</small>
             </div>
@@ -96,7 +107,7 @@
           <!-- Horários de Funcionamento -->
           <div class="card mb-4">
             <h3 class="mb-3">Horários de Funcionamento</h3>
-            
+
             <div id="working-hours">
               <div class="grid grid-3 mb-3">
                 <label class="form-label"><strong>Dia</strong></label>
@@ -152,7 +163,7 @@
           <!-- Dias Excluídos (Feriados) -->
           <div class="card mb-4">
             <h3 class="mb-3">Dias Excluídos (Feriados)</h3>
-            
+
             <div class="form-group">
               <label class="form-label">Adicionar nova data excluída</label>
               <div class="grid grid-2">
@@ -178,7 +189,7 @@
           <div class="card mt-4">
             <h3 class="mb-3"><i class="icon-settings"></i> Segurança e Acesso</h3>
             <p class="text-muted mb-3">Altere suas credenciais de acesso ao painel administrativo</p>
-            
+
             <div class="form-group">
               <label class="form-label">Novo Usuário</label>
               <input type="text" id="new-username" class="form-control" placeholder="Digite o novo nome de usuário">
@@ -215,7 +226,8 @@
 
             <div class="form-group">
               <label class="form-label">Senha Atual (para confirmar alterações)</label>
-              <input type="password" id="current-password" class="form-control" placeholder="Digite sua senha atual" required>
+              <input type="password" id="current-password" class="form-control" placeholder="Digite sua senha atual"
+                required>
               <small class="text-muted">Necessário para confirmar sua identidade</small>
             </div>
 
@@ -242,12 +254,13 @@
         document.getElementById('business-email').value = settings.business_email || '';
         document.getElementById('business-address').value = settings.business_address || '';
         document.getElementById('about-text').value = settings.about_text || '';
+        document.getElementById('employee-count').value = settings.employee_count || 1;
 
         // Carregar horários de funcionamento
         if (settings.working_hours) {
           const hours = settings.working_hours;
           const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-          
+
           days.forEach(day => {
             if (hours[day]) {
               document.getElementById(`${day}-start`).value = hours[day].start || '';
@@ -270,7 +283,7 @@
         const dates = await response.json();
 
         const container = document.getElementById('excluded-dates-list');
-        
+
         if (dates.length === 0) {
           container.innerHTML = '<p class="text-muted">Nenhuma data excluída cadastrada</p>';
           return;
@@ -293,7 +306,7 @@
     async function addExcludedDate() {
       const dateInput = document.getElementById('new-excluded-date');
       const reasonInput = document.getElementById('new-excluded-reason');
-      
+
       if (!dateInput.value) {
         showNotification('Selecione uma data', 'error');
         return;
@@ -353,7 +366,7 @@
       // Coletar horários de funcionamento
       const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
       const workingHours = {};
-      
+
       days.forEach(day => {
         workingHours[day] = {
           start: document.getElementById(`${day}-start`).value || null,
@@ -368,7 +381,8 @@
         business_email: document.getElementById('business-email').value,
         business_address: document.getElementById('business-address').value,
         about_text: document.getElementById('about-text').value,
-        working_hours: workingHours
+        working_hours: workingHours,
+        employee_count: parseInt(document.getElementById('employee-count').value) || 1
       };
 
       try {
@@ -459,7 +473,7 @@
 
         if (result.success) {
           showNotification('Credenciais atualizadas com sucesso!', 'success');
-          
+
           // Exibir mensagem no terminal (console do navegador)
           console.log('\n' + '='.repeat(60));
           console.log('CREDENCIAIS ATUALIZADAS COM SUCESSO!');
@@ -472,7 +486,7 @@
           }
           console.log('IMPORTANTE: Anote suas novas credenciais!');
           console.log('='.repeat(60) + '\n');
-          
+
           // Limpar campos
           document.getElementById('new-username').value = '';
           document.getElementById('new-password').value = '';
@@ -495,4 +509,5 @@
     loadSettings();
   </script>
 </body>
+
 </html>

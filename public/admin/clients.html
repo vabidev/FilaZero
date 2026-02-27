@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clientes - Admin FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/icons.css">
 </head>
+
 <body>
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <div class="sidebar-header">
         <a href="/admin/dashboard" class="sidebar-logo"><i class="icon-calendar"></i> FilaZero</a>
       </div>
-      
+
       <ul class="sidebar-menu">
         <li><a href="/admin/dashboard" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
+          </a></li>
         <li><a href="/admin/appointments" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
+          </a></li>
         <li><a href="/admin/services" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
+          </a></li>
         <li><a href="/admin/clients" class="sidebar-link active">
-          <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
+          </a></li>
         <li><a href="/admin/settings" class="sidebar-link">
-          <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
-        </a></li>
+            <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
+          </a></li>
       </ul>
 
       <div class="sidebar-footer">
@@ -191,14 +196,14 @@
     async function deleteClient(clientId) {
       const client = clients.find(c => c.id === clientId);
       if (!client) return;
-      
+
       if (!confirm(`Tem certeza que deseja apagar o cliente "${client.name}"?\n\nAtenção: Isso também apagará todos os agendamentos deste cliente!`)) {
         return;
       }
 
       try {
         console.log('Deletando cliente:', clientId);
-        
+
         const response = await fetch(`/api/clients/${clientId}`, {
           method: 'DELETE',
           headers: {
@@ -233,4 +238,5 @@
     loadClients();
   </script>
 </body>
+
 </html>

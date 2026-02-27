@@ -9,22 +9,22 @@ const db = require('../database');
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     const admin = await db.get('SELECT * FROM admins WHERE username = ?', [username]);
-    
+
     if (!admin) {
       return res.status(401).json({ success: false, message: 'Usuário ou senha inválidos' });
     }
 
     const validPassword = await bcrypt.compare(password, admin.password);
-    
+
     if (!validPassword) {
       return res.status(401).json({ success: false, message: 'Usuário ou senha inválidos' });
     }
 
     req.session.adminId = admin.id;
     req.session.username = admin.username;
-    
+
     res.json({ success: true, message: 'Login realizado com sucesso' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Erro ao fazer login' });
@@ -58,22 +58,22 @@ router.post('/update-credentials', async (req, res) => {
 
     // Verificar se pelo menos um campo foi fornecido
     if (!newUsername && !newPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Forneça pelo menos um campo para atualizar (usuário ou senha)' 
+      return res.status(400).json({
+        success: false,
+        message: 'Forneça pelo menos um campo para atualizar (usuário ou senha)'
       });
     }
 
     // Buscar admin atual
     const admin = await db.get('SELECT * FROM admins WHERE id = ?', [adminId]);
-    
+
     if (!admin) {
       return res.status(404).json({ success: false, message: 'Administrador não encontrado' });
     }
 
     // Verificar senha atual
     const validPassword = await bcrypt.compare(currentPassword, admin.password);
-    
+
     if (!validPassword) {
       return res.status(401).json({ success: false, message: 'Senha atual incorreta' });
     }
@@ -81,34 +81,34 @@ router.post('/update-credentials', async (req, res) => {
     // Validações do novo usuário
     if (newUsername) {
       if (newUsername.includes(' ')) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'O nome de usuário não pode conter espaços' 
+        return res.status(400).json({
+          success: false,
+          message: 'O nome de usuário não pode conter espaços'
         });
       }
       if (newUsername.length < 3) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'O nome de usuário deve ter no mínimo 3 caracteres' 
+        return res.status(400).json({
+          success: false,
+          message: 'O nome de usuário deve ter no mínimo 3 caracteres'
         });
       }
       if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Use apenas letras, números e underscore no usuário' 
+        return res.status(400).json({
+          success: false,
+          message: 'Use apenas letras, números e underscore no usuário'
         });
       }
 
       // Verificar se o username já existe (em outro admin)
       const existingAdmin = await db.get(
-        'SELECT * FROM admins WHERE username = ? AND id != ?', 
+        'SELECT * FROM admins WHERE username = ? AND id != ?',
         [newUsername, adminId]
       );
-      
+
       if (existingAdmin) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Este nome de usuário já está em uso' 
+        return res.status(400).json({
+          success: false,
+          message: 'Este nome de usuário já está em uso'
         });
       }
     }
@@ -116,15 +116,15 @@ router.post('/update-credentials', async (req, res) => {
     // Validações da nova senha
     if (newPassword) {
       if (newPassword.includes(' ')) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'A senha não pode conter espaços' 
+        return res.status(400).json({
+          success: false,
+          message: 'A senha não pode conter espaços'
         });
       }
       if (newPassword.length < 6) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'A senha deve ter no mínimo 6 caracteres' 
+        return res.status(400).json({
+          success: false,
+          message: 'A senha deve ter no mínimo 6 caracteres'
         });
       }
     }
@@ -210,12 +210,15 @@ router.post('/settings', async (req, res) => {
       business_address,
       about_text,
       working_hours,
-      theme_mode
+      theme_mode,
+      employee_count
     } = req.body;
 
-    const workingHoursJson = typeof working_hours === 'string' 
-      ? working_hours 
+    const workingHoursJson = typeof working_hours === 'string'
+      ? working_hours
       : JSON.stringify(working_hours);
+
+    const empCount = parseInt(employee_count) || 1;
 
     await db.run(`
       UPDATE settings SET
@@ -227,6 +230,7 @@ router.post('/settings', async (req, res) => {
         about_text = ?,
         working_hours = ?,
         theme_mode = ?,
+        employee_count = ?,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = 1
     `, [
@@ -237,7 +241,8 @@ router.post('/settings', async (req, res) => {
       business_address,
       about_text,
       workingHoursJson,
-      theme_mode
+      theme_mode,
+      empCount
     ]);
 
     res.json({ success: true, message: 'Configurações atualizadas com sucesso' });
@@ -276,7 +281,7 @@ router.post('/services', async (req, res) => {
 
   try {
     const { name, description, duration, price } = req.body;
-    
+
     const result = await db.run(
       'INSERT INTO services (name, description, duration, price) VALUES (?, ?, ?, ?)',
       [name, description, duration, price]
@@ -297,7 +302,7 @@ router.put('/services/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, duration, price, active } = req.body;
-    
+
     await db.run(
       'UPDATE services SET name = ?, description = ?, duration = ?, price = ?, active = ? WHERE id = ?',
       [name, description, duration, price, active, id]
@@ -355,7 +360,7 @@ router.get('/clients/:id/history', async (req, res) => {
       WHERE a.client_id = ?
       ORDER BY a.appointment_date DESC, a.appointment_time DESC
     `, [id]);
-    
+
     res.json(appointments);
   } catch (error) {
     res.status(500).json({ success: false, message: 'Erro ao buscar histórico' });
@@ -366,7 +371,7 @@ router.get('/clients/:id/history', async (req, res) => {
 router.delete('/clients/:id', async (req, res) => {
   console.log('DELETE /api/clients/:id chamado');
   console.log('Session:', req.session);
-  
+
   if (!req.session || !req.session.adminId) {
     console.log('Não autenticado');
     return res.status(401).json({ success: false, message: 'Não autenticado' });
@@ -375,15 +380,15 @@ router.delete('/clients/:id', async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Deletando cliente ID:', id);
-    
+
     // Deletar agendamentos do cliente primeiro
     const resultAppointments = await db.run('DELETE FROM appointments WHERE client_id = ?', [id]);
     console.log('Agendamentos deletados:', resultAppointments);
-    
+
     // Deletar cliente
     const resultClient = await db.run('DELETE FROM clients WHERE id = ?', [id]);
     console.log('Cliente deletado:', resultClient);
-    
+
     return res.status(200).json({ success: true, message: 'Cliente deletado com sucesso' });
   } catch (error) {
     console.error('Erro ao deletar cliente:', error);
@@ -412,7 +417,7 @@ router.get('/appointments', async (req, res) => {
         WHERE c.phone = ?
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
       `, [phone]);
-      
+
       return res.json(appointments);
     }
 
@@ -453,11 +458,31 @@ router.get('/appointments', async (req, res) => {
   }
 });
 
+// Função auxiliar para converter horário "HH:MM" em minutos desde meia-noite
+function timeToMinutes(timeStr) {
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+// Função auxiliar para contar sobreposições de um intervalo com agendamentos existentes
+function countOverlaps(slotStartMin, slotEndMin, existingAppointments) {
+  let count = 0;
+  for (const appt of existingAppointments) {
+    const apptStart = timeToMinutes(appt.appointment_time);
+    const apptEnd = apptStart + appt.duration;
+    // Dois intervalos se sobrepõem se: start1 < end2 AND start2 < end1
+    if (slotStartMin < apptEnd && apptStart < slotEndMin) {
+      count++;
+    }
+  }
+  return count;
+}
+
 // Criar agendamento (público)
 router.post('/appointments', async (req, res) => {
   try {
     console.log('Recebendo agendamento:', req.body);
-    
+
     const { name, phone, email, service_id, appointment_date, appointment_time, notes } = req.body;
 
     // Validação básica
@@ -470,26 +495,43 @@ router.post('/appointments', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const appointmentDate = new Date(appointment_date + 'T00:00:00');
-    
+
     if (appointmentDate < today) {
       console.log('Data inválida - anterior a hoje');
       return res.status(400).json({ success: false, message: 'Não é possível agendar em datas passadas' });
     }
 
-    // Verificar se o horário está disponível
-    const existing = await db.get(
-      'SELECT * FROM appointments WHERE appointment_date = ? AND appointment_time = ? AND status != ?',
-      [appointment_date, appointment_time, 'cancelled']
-    );
+    // Obter o serviço para saber a duração
+    const service = await db.get('SELECT duration FROM services WHERE id = ?', [service_id]);
+    if (!service) {
+      return res.status(404).json({ success: false, message: 'Serviço não encontrado' });
+    }
 
-    if (existing) {
-      console.log('Horário indisponível');
-      return res.status(400).json({ success: false, message: 'Horário indisponível' });
+    // Obter número de funcionários
+    const settings = await db.get('SELECT employee_count FROM settings LIMIT 1');
+    const employeeCount = (settings && settings.employee_count) ? settings.employee_count : 1;
+
+    // Buscar todos os agendamentos do dia com duração do serviço
+    const existingAppointments = await db.all(`
+      SELECT a.appointment_time, s.duration
+      FROM appointments a
+      JOIN services s ON a.service_id = s.id
+      WHERE a.appointment_date = ? AND a.status != 'cancelled'
+    `, [appointment_date]);
+
+    // Calcular sobreposições para o horário solicitado
+    const slotStartMin = timeToMinutes(appointment_time);
+    const slotEndMin = slotStartMin + service.duration;
+    const overlaps = countOverlaps(slotStartMin, slotEndMin, existingAppointments);
+
+    if (overlaps >= employeeCount) {
+      console.log(`Horário indisponível: ${overlaps} sobreposições, ${employeeCount} funcionários`);
+      return res.status(400).json({ success: false, message: 'Horário indisponível - todos os funcionários estão ocupados neste período' });
     }
 
     // Verificar se o cliente já existe
     let client = await db.get('SELECT * FROM clients WHERE phone = ?', [phone]);
-    
+
     if (!client) {
       console.log('Criando novo cliente');
       // Criar novo cliente
@@ -510,7 +552,7 @@ router.post('/appointments', async (req, res) => {
     }
 
     console.log('Criando agendamento para cliente:', client.id);
-    
+
     // Criar agendamento
     const result = await db.run(
       'INSERT INTO appointments (client_id, service_id, appointment_date, appointment_time, notes) VALUES (?, ?, ?, ?, ?)',
@@ -518,7 +560,7 @@ router.post('/appointments', async (req, res) => {
     );
 
     console.log('Agendamento criado com sucesso:', result.id);
-    
+
     return res.status(200).json({ success: true, id: result.id, message: 'Agendamento criado com sucesso' });
   } catch (error) {
     console.error('Erro ao criar agendamento:', error);
@@ -535,7 +577,7 @@ router.put('/appointments/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    
+
     await db.run('UPDATE appointments SET status = ? WHERE id = ?', [status, id]);
     res.json({ success: true, message: 'Status atualizado com sucesso' });
   } catch (error) {
@@ -577,13 +619,14 @@ router.get('/available-times', async (req, res) => {
       return res.json([]); // Não há horários disponíveis em dias excluídos
     }
 
-    // Obter configurações de horário de trabalho
-    const settings = await db.get('SELECT working_hours FROM settings LIMIT 1');
+    // Obter configurações (horário de trabalho + número de funcionários)
+    const settings = await db.get('SELECT working_hours, employee_count FROM settings LIMIT 1');
     const workingHours = settings ? JSON.parse(settings.working_hours) : {};
+    const employeeCount = (settings && settings.employee_count) ? settings.employee_count : 1;
 
     // Obter serviço para saber a duração
     const service = await db.get('SELECT duration FROM services WHERE id = ?', [service_id]);
-    
+
     if (!service) {
       return res.status(404).json({ success: false, message: 'Serviço não encontrado' });
     }
@@ -599,23 +642,23 @@ router.get('/available-times', async (req, res) => {
       return res.json([]); // Fechado neste dia
     }
 
-    // Obter agendamentos existentes
-    const bookedTimes = await db.all(
-      'SELECT appointment_time FROM appointments WHERE appointment_date = ? AND status != ?',
-      [date, 'cancelled']
-    );
-
-    const bookedTimesSet = new Set(bookedTimes.map(b => b.appointment_time));
+    // Obter TODOS os agendamentos do dia com duração do serviço (para verificar sobreposição)
+    const existingAppointments = await db.all(`
+      SELECT a.appointment_time, s.duration
+      FROM appointments a
+      JOIN services s ON a.service_id = s.id
+      WHERE a.appointment_date = ? AND a.status != 'cancelled'
+    `, [date]);
 
     // Determinar se é hoje para filtrar horários passados (usando horário do Brasil)
     const today = new Date();
     const brazilTime = new Date(today.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
     const todayString = brazilTime.toISOString().split('T')[0];
     const isToday = date === todayString;
-    
+
     let currentHour24 = null;
     let currentMinuteNow = null;
-    
+
     if (isToday) {
       currentHour24 = brazilTime.getHours();
       currentMinuteNow = brazilTime.getMinutes();
@@ -634,7 +677,7 @@ router.get('/available-times', async (req, res) => {
 
     while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
       const timeString = `${String(currentHour).padStart(2, '0')}:${String(currentMinute).padStart(2, '0')}`;
-      
+
       // Se for hoje, verificar se o horário é futuro
       let showTime = true;
       if (isToday) {
@@ -644,9 +687,17 @@ router.get('/available-times', async (req, res) => {
           showTime = false; // Mesma hora, mas minuto já passou
         }
       }
-      
-      if (showTime && !bookedTimesSet.has(timeString)) {
-        availableTimes.push(timeString);
+
+      if (showTime) {
+        // Verificar sobreposições com agendamentos existentes
+        const slotStartMin = timeToMinutes(timeString);
+        const slotEndMin = slotStartMin + service.duration;
+        const overlaps = countOverlaps(slotStartMin, slotEndMin, existingAppointments);
+
+        // Só mostrar o slot se houver funcionário disponível
+        if (overlaps < employeeCount) {
+          availableTimes.push(timeString);
+        }
       }
 
       // Incrementar baseado na duração do serviço
@@ -734,7 +785,7 @@ router.post('/excluded-dates', async (req, res) => {
 
   try {
     const { excluded_date, reason } = req.body;
-    
+
     await db.run(
       'INSERT INTO excluded_dates (excluded_date, reason) VALUES (?, ?)',
       [excluded_date, reason]

@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contato - FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/icons.css">
 </head>
+
 <body>
   <nav class="navbar">
     <div class="navbar-container">
@@ -75,22 +80,22 @@
               <label class="form-label">Nome *</label>
               <input type="text" class="form-control" required>
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">E-mail *</label>
               <input type="email" class="form-control" required>
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">Telefone (opcional)</label>
               <input type="tel" class="form-control">
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">Mensagem *</label>
               <textarea class="form-control" rows="5" required></textarea>
             </div>
-            
+
             <button type="submit" class="btn btn-accent">Enviar Mensagem</button>
           </form>
         </div>
@@ -112,15 +117,15 @@
       try {
         const response = await fetch('/api/settings');
         const settings = await response.json();
-        
+
         if (settings.business_phone) {
           document.getElementById('business-phone').textContent = settings.business_phone;
         }
-        
+
         if (settings.business_email) {
           document.getElementById('business-email').textContent = settings.business_email;
         }
-        
+
         if (settings.business_address) {
           document.getElementById('business-address').textContent = settings.business_address;
         }
@@ -148,4 +153,5 @@
     loadContactInfo();
   </script>
 </body>
+
 </html>

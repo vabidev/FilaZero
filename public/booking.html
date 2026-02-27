@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agendar - FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/icons.css">
   <style>
@@ -18,7 +22,7 @@
 
     .booking-step.active {
       display: block;
-      animation: fadeIn 0.3s ease;
+      animation: fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .step-indicator {
@@ -42,7 +46,7 @@
       left: 0;
       right: 0;
       height: 2px;
-      background-color: var(--border-color);
+      background-color: var(--glass-border);
       z-index: -1;
     }
 
@@ -56,35 +60,45 @@
 
     .step-number {
       display: inline-block;
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
+      width: 44px;
+      height: 44px;
+      line-height: 44px;
       border-radius: 50%;
-      background-color: var(--bg-tertiary);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
       color: var(--text-secondary);
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .step.completed .step-number,
     .step.active .step-number {
-      background-color: var(--accent-primary);
+      background: var(--accent-primary);
       color: white;
+      border-color: var(--accent-primary);
+      box-shadow: 0 4px 16px var(--accent-glow);
     }
 
     .step-label {
       display: block;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
+      font-weight: 500;
     }
 
     .service-card,
     .time-slot {
-      border: 2px solid var(--border-color);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       padding: 1rem;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       margin-bottom: 1rem;
     }
 
@@ -92,12 +106,14 @@
     .time-slot:hover {
       border-color: var(--accent-primary);
       transform: translateY(-2px);
+      box-shadow: 0 4px 16px var(--accent-glow);
     }
 
     .service-card.selected,
     .time-slot.selected {
       border-color: var(--accent-primary);
-      background-color: var(--accent-light);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
     .time-slots {
@@ -113,9 +129,12 @@
     }
 
     .booking-summary {
-      background-color: var(--bg-secondary);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
       padding: 1.5rem;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       margin-bottom: 1.5rem;
     }
 
@@ -124,7 +143,7 @@
       justify-content: space-between;
       margin-bottom: 0.75rem;
       padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .summary-item:last-child {
@@ -151,6 +170,7 @@
     }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="navbar-container">
@@ -299,4 +319,5 @@
     }
   </script>
 </body>
+
 </html>

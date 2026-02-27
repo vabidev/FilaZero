@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sobre - FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/icons.css">
 </head>
+
 <body>
   <nav class="navbar">
     <div class="navbar-container">
@@ -44,11 +49,12 @@
   <section class="section">
     <div class="container" style="max-width: 800px;">
       <h1 class="section-title">Sobre Nós</h1>
-      
+
       <div class="card">
         <div id="about-content">
           <p>Somos uma empresa dedicada a oferecer os melhores serviços para nossos clientes.</p>
-          <p>Nossa missão é proporcionar experiências excepcionais através de atendimento de qualidade e profissionalismo.</p>
+          <p>Nossa missão é proporcionar experiências excepcionais através de atendimento de qualidade e
+            profissionalismo.</p>
         </div>
       </div>
 
@@ -71,7 +77,7 @@
       try {
         const response = await fetch('/api/settings');
         const settings = await response.json();
-        
+
         if (settings.about_text) {
           const aboutContent = document.getElementById('about-content');
           // Substituir quebras de linha por parágrafos
@@ -99,4 +105,5 @@
     }
   </script>
 </body>
+
 </html>

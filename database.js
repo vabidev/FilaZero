@@ -36,10 +36,16 @@ class Database {
         business_address TEXT,
         about_text TEXT,
         working_hours TEXT,
+        employee_count INTEGER DEFAULT 1,
         theme_mode TEXT DEFAULT 'light',
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Adicionar coluna employee_count se não existir (migração)
+    this.db.run(`ALTER TABLE settings ADD COLUMN employee_count INTEGER DEFAULT 1`, (err) => {
+      // Ignora erro se coluna já existir
+    });
 
     // Tabela de serviços
     this.db.run(`
@@ -149,15 +155,17 @@ class Database {
               business_phone, 
               business_email,
               about_text,
-              working_hours
-            ) VALUES (?, ?, ?, ?, ?, ?)
+              working_hours,
+              employee_count
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
           `, [
             'FilaZero',
             'Sistema de Agendamento Online',
             '(11) 9999-9999',
             'contato@filazero.com',
             'Somos uma empresa dedicada a oferecer os melhores serviços para nossos clientes.',
-            JSON.stringify(config.business.defaultWorkingHours)
+            JSON.stringify(config.business.defaultWorkingHours),
+            1
           ], (err) => {
             if (!err) {
               console.log('✓ Configurações padrão criadas');
