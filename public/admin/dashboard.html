@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Admin FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/icons.css">
+</head>
+
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <a href="/admin/dashboard" class="sidebar-logo"><i class="icon-calendar"></i> FilaZero</a>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard" class="sidebar-link active">
+            <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
+          </a></li>
+        <li><a href="/admin/appointments" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
+          </a></li>
+        <li><a href="/admin/services" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
+          </a></li>
+        <li><a href="/admin/clients" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
+          </a></li>
+        <li><a href="/admin/settings" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
+          </a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="logout()">Sair</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button class="mobile-sidebar-toggle" onclick="toggleSidebar()"><i class="icon-menu"></i></button>
+        <h1 class="admin-title">Dashboard</h1>
+        <div class="admin-actions">
+          <button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button>
+          <span id="admin-username" class="text-muted"></span>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="icon-calendar"></i></div>
+            <div class="stat-info">
+              <div class="stat-label">Agendamentos Hoje</div>
+              <div class="stat-value" id="today-count">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="icon-clock"></i></div>
+            <div class="stat-info">
+              <div class="stat-label">Pendentes</div>
+              <div class="stat-value" id="pending-count">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="icon-users"></i></div>
+            <div class="stat-info">
+              <div class="stat-label">Total Clientes</div>
+              <div class="stat-value" id="clients-count">0</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="icon-scissors"></i></div>
+            <div class="stat-info">
+              <div class="stat-label">Serviços Ativos</div>
+              <div class="stat-value" id="services-count">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header">
+            <h2 class="table-title">Agendamentos de Hoje</h2>
+            <a href="/admin/appointments" class="btn btn-accent btn-sm" style="display: none;">Ver Todos</a>
+          </div>
+          <div id="today-appointments">
+            <div class="empty-state">
+              <div class="empty-icon"><i class="icon-calendar"></i></div>
+              <p>Nenhum agendamento para hoje</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    async function loadDashboardStats() {
+      try {
+        const response = await fetch('/api/dashboard/stats');
+        const data = await response.json();
+
+        // Atualizar contadores
+        document.getElementById('today-count').textContent = data.todayAppointments.length;
+        document.getElementById('pending-count').textContent = data.pendingAppointments;
+        document.getElementById('clients-count').textContent = data.totalClients;
+        document.getElementById('services-count').textContent = data.activeServices;
+
+        // Mostrar agendamentos de hoje
+        const container = document.getElementById('today-appointments');
+
+        if (data.todayAppointments.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon"><i class="icon-calendar"></i></div>
+              <p>Nenhum agendamento para hoje</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Horário</th>
+                <th>Cliente</th>
+                <th>Serviço</th>
+                <th>Duração</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.todayAppointments.map(apt => `
+                <tr>
+                  <td><strong>${formatTime(apt.appointment_time)}</strong></td>
+                  <td>${apt.client_name}</td>
+                  <td>${apt.service_name}</td>
+                  <td>${apt.duration} min</td>
+                  <td><span class="badge badge-${apt.status}">${getStatusText(apt.status)}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (error) {
+        console.error('Erro ao carregar estatísticas:', error);
+        showNotification('Erro ao carregar estatísticas', 'error');
+      }
+    }
+
+    function getStatusText(status) {
+      const statusMap = {
+        pending: 'Pendente',
+        confirmed: 'Confirmado',
+        completed: 'Concluído',
+        cancelled: 'Cancelado'
+      };
+      return statusMap[status] || status;
+    }
+
+    loadDashboardStats();
+    // Atualizar a cada 30 segundos
+    setInterval(loadDashboardStats, 30000);
+  </script>
+</body>
+
+</html>

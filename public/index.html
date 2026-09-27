@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FilaZero - Agende seus horários de forma rápida e prática, sem complicações. Sistema de agendamento online simplificado.">
+  <title>FilaZero - Sistema de Agendamento Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/icons.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo"><i class="icon-calendar"></i> FilaZero</a>
+      <div class="navbar-actions-mobile">
+        <button class="notification-bell-mobile" onclick="openNotifications(event)" title="Notificações">
+          <i class="icon-bell"></i>
+          <span id="notification-badge-mobile" class="notification-badge"></span>
+        </button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="icon-menu"></i></button>
+      </div>
+      <ul class="navbar-menu">
+        <li><a href="/" class="navbar-link active">Início</a></li>
+        <li><a href="/agendar" class="navbar-link">Agendar</a></li>
+        <li><a href="/sobre" class="navbar-link">Sobre</a></li>
+        <li><a href="/contato" class="navbar-link">Contato</a></li>
+        <li class="notification-desktop">
+          <button class="notification-bell" onclick="openNotifications(event)" title="Notificações">
+            <i class="icon-bell"></i>
+            <span id="notification-badge" class="notification-badge"></span>
+          </button>
+        </li>
+        <li><button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button></li>
+      </ul>
+      <div id="notifications-dropdown" class="notifications-dropdown">
+        <div class="notifications-header">
+          <h3 class="notifications-title">Notificações</h3>
+          <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Marcar todas como lidas</button>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-container">
+      <h1>Agendamento Online Simplificado</h1>
+      <p class="business-description">Agende seus horários de forma rápida e prática, sem complicações</p>
+      <div class="hero-buttons">
+        <a href="/agendar" class="btn btn-primary">Agendar Agora</a>
+        <a href="/sobre" class="btn btn-secondary">Saiba Mais</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Por que agendar online?</h2>
+        <p class="section-subtitle">Simplicidade e praticidade para você</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-icon"><i class="icon-zap"></i></div>
+          <h3 class="card-title">Rápido e Fácil</h3>
+          <p class="card-text">Agende em poucos cliques, sem necessidade de ligações ou espera.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="icon-smartphone"></i></div>
+          <h3 class="card-title">Disponível 24/7</h3>
+          <p class="card-text">Faça seu agendamento a qualquer hora, de qualquer lugar.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="icon-check-circle"></i></div>
+          <h3 class="card-title">Confirmação Instantânea</h3>
+          <p class="card-text">Receba confirmação imediata do seu horário agendado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Nossos Serviços</h2>
+        <p class="section-subtitle">Confira os serviços disponíveis</p>
+      </div>
+      <div id="services-list" class="grid grid-2">
+        <!-- Serviços serão carregados aqui -->
+      </div>
+      <div class="text-center mt-4">
+        <a href="/agendar" class="btn btn-accent">Ver Todos e Agendar</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container text-center">
+      <h2 class="section-title">Pronto para agendar?</h2>
+      <p class="section-subtitle mb-4">É rápido, fácil e sem complicações</p>
+      <a href="/agendar" class="btn btn-accent">Agendar Agora</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="footer-text business-name">FilaZero</p>
+      <p class="footer-text">&copy; 2026 Projeto open source sob licença MIT</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script>
+    // Marcar todas notificações como lidas
+    function markAllNotificationsAsRead() {
+      const phone = getCurrentUserPhone();
+      if (phone) {
+        markAllAsRead(phone);
+        renderNotifications();
+      }
+    }
+
+    // Carregar serviços na página inicial
+    async function loadServices() {
+      try {
+        const response = await fetch('/api/services/active');
+        const services = await response.json();
+        
+        const servicesList = document.getElementById('services-list');
+        
+        if (services.length === 0) {
+          servicesList.innerHTML = '<p class="text-muted">Nenhum serviço disponível no momento.</p>';
+          return;
+        }
+
+        // Mostrar apenas os primeiros 4 serviços
+        const displayServices = services.slice(0, 4);
+        
+        servicesList.innerHTML = displayServices.map(service => `
+          <div class="card">
+            <h3 class="card-title">${service.name}</h3>
+            <p class="card-text">${service.description || 'Serviço de qualidade'}</p>
+            <p class="card-text"><strong>Duração:</strong> ${service.duration} minutos</p>
+            ${service.price ? `<p class="card-text"><strong>Valor:</strong> ${formatCurrency(service.price)}</p>` : ''}
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Erro ao carregar serviços:', error);
+      }
+    }
+
+    // Carregar configurações e serviços
+    loadBusinessSettings();
+    loadServices();
+  </script>
+</body>
+</html>

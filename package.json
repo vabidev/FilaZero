@@ -1,0 +1,28 @@
+{
+  "name": "filazero",
+  "version": "2.2.0",
+  "description": "Sistema de agendamento online gratuito e open source",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "agendamento",
+    "scheduling",
+    "booking",
+    "appointments"
+  ],
+  "author": "vabidev",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.22.1",
+    "express-session": "^1.17.3",
+    "sqlite3": "^5.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

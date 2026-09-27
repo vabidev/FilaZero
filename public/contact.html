@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato - FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/icons.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo"><i class="icon-calendar"></i> FilaZero</a>
+      <div class="navbar-actions-mobile">
+        <button class="notification-bell-mobile" onclick="openNotifications(event)" title="Notificações">
+          <i class="icon-bell"></i>
+          <span id="notification-badge-mobile" class="notification-badge"></span>
+        </button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="icon-menu"></i></button>
+      </div>
+      <ul class="navbar-menu">
+        <li><a href="/" class="navbar-link">Início</a></li>
+        <li><a href="/agendar" class="navbar-link">Agendar</a></li>
+        <li><a href="/sobre" class="navbar-link">Sobre</a></li>
+        <li><a href="/contato" class="navbar-link active">Contato</a></li>
+        <li class="notification-desktop">
+          <button class="notification-bell" onclick="openNotifications(event)" title="Notificações">
+            <i class="icon-bell"></i>
+            <span id="notification-badge" class="notification-badge"></span>
+          </button>
+        </li>
+        <li><button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button></li>
+      </ul>
+      <div id="notifications-dropdown" class="notifications-dropdown">
+        <div class="notifications-header">
+          <h3 class="notifications-title">Notificações</h3>
+          <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Marcar todas como lidas</button>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <h1 class="section-title">Entre em Contato</h1>
+        <p class="section-subtitle">Estamos à disposição para atendê-lo</p>
+      </div>
+
+      <div class="grid grid-2">
+        <!-- Informações de Contato -->
+        <div>
+          <div class="card">
+            <h3 class="card-title"><i class="icon-phone"></i> Telefone</h3>
+            <p class="card-text" id="business-phone">(11) 9999-9999</p>
+          </div>
+
+          <div class="card mt-3">
+            <h3 class="card-title"><i class="icon-mail"></i> E-mail</h3>
+            <p class="card-text" id="business-email">contato@filazero.com</p>
+          </div>
+
+          <div class="card mt-3">
+            <h3 class="card-title"><i class="icon-map-pin"></i> Endereço</h3>
+            <p class="card-text" id="business-address">-</p>
+          </div>
+        </div>
+
+        <!-- Formulário de Contato -->
+        <div class="card">
+          <h3 class="card-title mb-3">Envie uma mensagem</h3>
+          <form id="contact-form" onsubmit="handleContactForm(event)">
+            <div class="form-group">
+              <label class="form-label">Nome *</label>
+              <input type="text" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">E-mail *</label>
+              <input type="email" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Telefone (opcional)</label>
+              <input type="tel" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Mensagem *</label>
+              <textarea class="form-control" rows="5" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-accent">Enviar Mensagem</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="footer-text business-name">FilaZero</p>
+      <p class="footer-text">&copy; 2026 Projeto open source sob licença MIT</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script>
+    async function loadContactInfo() {
+      try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+
+        if (settings.business_phone) {
+          document.getElementById('business-phone').textContent = settings.business_phone;
+        }
+
+        if (settings.business_email) {
+          document.getElementById('business-email').textContent = settings.business_email;
+        }
+
+        if (settings.business_address) {
+          document.getElementById('business-address').textContent = settings.business_address;
+        }
+      } catch (error) {
+        console.error('Erro ao carregar informações de contato:', error);
+      }
+    }
+
+    function handleContactForm(event) {
+      event.preventDefault();
+      showNotification('Mensagem enviada com sucesso! Entraremos em contato em breve.', 'success');
+      event.target.reset();
+    }
+
+    // Marcar todas notificações como lidas
+    function markAllNotificationsAsRead() {
+      const phone = getCurrentUserPhone();
+      if (phone) {
+        markAllAsRead(phone);
+        renderNotifications();
+      }
+    }
+
+    loadBusinessSettings();
+    loadContactInfo();
+  </script>
+</body>
+
+</html>

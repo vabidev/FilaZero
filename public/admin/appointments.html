@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendamentos - Admin FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/icons.css">
+</head>
+
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <a href="/admin/dashboard" class="sidebar-logo"><i class="icon-calendar"></i> FilaZero</a>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
+          </a></li>
+        <li><a href="/admin/appointments" class="sidebar-link active">
+            <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
+          </a></li>
+        <li><a href="/admin/services" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
+          </a></li>
+        <li><a href="/admin/clients" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
+          </a></li>
+        <li><a href="/admin/settings" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
+          </a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="logout()">Sair</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button class="mobile-sidebar-toggle" onclick="toggleSidebar()"><i class="icon-menu"></i></button>
+        <h1 class="admin-title">Agendamentos</h1>
+        <div class="admin-actions">
+          <button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <div class="card mb-4">
+          <div class="grid grid-2">
+            <div class="form-group">
+              <label class="form-label">Data</label>
+              <input type="date" id="filter-date" class="form-control" onchange="loadAppointments()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select id="filter-status" class="form-control" onchange="loadAppointments()">
+                <option value="">Todos</option>
+                <option value="pending">Pendente</option>
+                <option value="confirmed">Confirmado</option>
+                <option value="completed">Concluído</option>
+                <option value="cancelled">Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <button class="btn btn-secondary" onclick="clearFilters()" style="width: 100%;">Limpar Filtros</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-header">
+            <h2 class="table-title">Lista de Agendamentos</h2>
+          </div>
+          <div id="appointments-table"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Popup de Confirmação Customizado -->
+  <div class="confirm-popup-overlay" id="confirm-popup-overlay">
+    <div class="confirm-popup">
+      <div class="confirm-popup-icon" id="confirm-popup-icon">⚠️</div>
+      <h3 class="confirm-popup-title" id="confirm-popup-title">Confirmação</h3>
+      <p class="confirm-popup-message" id="confirm-popup-message"></p>
+      <div class="confirm-popup-buttons">
+        <button class="btn btn-secondary btn-sm" id="confirm-popup-no" onclick="closeConfirmPopup(false)">Não</button>
+        <button class="btn btn-sm" id="confirm-popup-yes" onclick="closeConfirmPopup(true)">Sim</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    let appointments = [];
+    let confirmResolve = null;
+
+    function showConfirmPopup(message, type) {
+      const overlay = document.getElementById('confirm-popup-overlay');
+      const msgEl = document.getElementById('confirm-popup-message');
+      const titleEl = document.getElementById('confirm-popup-title');
+      const iconEl = document.getElementById('confirm-popup-icon');
+      const yesBtn = document.getElementById('confirm-popup-yes');
+
+      msgEl.textContent = message;
+
+      if (type === 'confirm') {
+        titleEl.textContent = 'Confirmar Agendamento';
+        iconEl.textContent = '✅';
+        yesBtn.className = 'btn btn-accent btn-sm';
+      } else if (type === 'complete') {
+        titleEl.textContent = 'Concluir Agendamento';
+        iconEl.textContent = '🎉';
+        yesBtn.className = 'btn btn-success btn-sm';
+      } else if (type === 'delete') {
+        titleEl.textContent = 'Excluir Agendamento';
+        iconEl.textContent = '🗑️';
+        yesBtn.className = 'btn btn-danger btn-sm';
+      }
+
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      return new Promise(resolve => {
+        confirmResolve = resolve;
+      });
+    }
+
+    function closeConfirmPopup(result) {
+      const overlay = document.getElementById('confirm-popup-overlay');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      if (confirmResolve) {
+        confirmResolve(result);
+        confirmResolve = null;
+      }
+    }
+
+    function getStatusBadge(status) {
+      const labels = {
+        pending: 'Pendente',
+        confirmed: 'Confirmado',
+        completed: 'Concluído',
+        cancelled: 'Cancelado'
+      };
+      return `<span class="badge badge-${status}">${labels[status] || status}</span>`;
+    }
+
+    function getActionButtons(apt) {
+      const buttons = [];
+
+      if (apt.status === 'pending' || apt.status === 'cancelled') {
+        buttons.push(`<button class="status-btn status-btn-confirm" onclick="handleConfirm(${apt.id})" title="Confirmar">
+          <i class="icon-check"></i> Confirmar
+        </button>`);
+      }
+
+      if (apt.status !== 'completed' && apt.status !== 'cancelled') {
+        buttons.push(`<button class="status-btn status-btn-complete" onclick="handleComplete(${apt.id})" title="Concluído">
+          <i class="icon-check"></i> Concluído
+        </button>`);
+      }
+
+      if (apt.status !== 'cancelled') {
+        buttons.push(`<button class="status-btn status-btn-delete" onclick="handleDelete(${apt.id})" title="Excluir">
+          <i class="icon-trash"></i> Excluir
+        </button>`);
+      }
+
+      return `<div class="status-actions">${buttons.join('')}</div>`;
+    }
+
+    async function loadAppointments() {
+      try {
+        const date = document.getElementById('filter-date').value;
+        const status = document.getElementById('filter-status').value;
+
+        let url = '/api/appointments?';
+        if (date) url += `date=${date}&`;
+        if (status) url += `status=${status}&`;
+
+        const response = await fetch(url);
+        appointments = await response.json();
+
+        const container = document.getElementById('appointments-table');
+
+        if (appointments.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon"><i class="icon-calendar"></i></div>
+              <p>Nenhum agendamento encontrado</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = `
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Cliente</th>
+                <th>Telefone</th>
+                <th>Serviço</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${appointments.map(apt => `
+                <tr>
+                  <td>${formatDate(apt.appointment_date)}</td>
+                  <td><strong>${formatTime(apt.appointment_time)}</strong></td>
+                  <td>${apt.client_name}</td>
+                  <td>${apt.client_phone}</td>
+                  <td>${apt.service_name}</td>
+                  <td>${apt.price ? formatCurrency(apt.price) : '-'}</td>
+                  <td>${getStatusBadge(apt.status)}</td>
+                  <td>${getActionButtons(apt)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (error) {
+        console.error('Erro ao carregar agendamentos:', error);
+        showNotification('Erro ao carregar agendamentos', 'error');
+      }
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const response = await fetch(`/api/appointments/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('Status atualizado com sucesso', 'success');
+          loadAppointments();
+        } else {
+          showNotification(result.message, 'error');
+          loadAppointments();
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar status:', error);
+        showNotification('Erro ao atualizar status', 'error');
+      }
+    }
+
+    async function handleConfirm(id) {
+      const confirmed = await showConfirmPopup(
+        'Tem certeza que deseja marcar este agendamento como confirmado?',
+        'confirm'
+      );
+      if (confirmed) {
+        await updateStatus(id, 'confirmed');
+      }
+    }
+
+    async function handleComplete(id) {
+      const confirmed = await showConfirmPopup(
+        'Tem certeza que deseja marcar este agendamento como concluído?',
+        'complete'
+      );
+      if (confirmed) {
+        await updateStatus(id, 'completed');
+      }
+    }
+
+    async function handleDelete(id) {
+      const confirmed = await showConfirmPopup(
+        'Tem certeza que deseja excluir este agendamento? O cliente será notificado sobre o cancelamento.',
+        'delete'
+      );
+      if (!confirmed) return;
+
+      try {
+        // Primeiro marca como cancelado (para notificar)
+        await fetch(`/api/appointments/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'cancelled' })
+        });
+
+        // Depois exclui o agendamento
+        const response = await fetch(`/api/appointments/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('Agendamento excluído com sucesso', 'success');
+          loadAppointments();
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao excluir agendamento:', error);
+        showNotification('Erro ao excluir agendamento', 'error');
+      }
+    }
+
+    function clearFilters() {
+      document.getElementById('filter-date').value = '';
+      document.getElementById('filter-status').value = '';
+      loadAppointments();
+    }
+
+    // Definir filtro de data padrão como hoje
+    document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
+
+    loadAppointments();
+  </script>
+</body>
+
+</html>

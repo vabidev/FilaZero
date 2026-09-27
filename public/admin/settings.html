@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações - Admin FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/icons.css">
+</head>
+
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <a href="/admin/dashboard" class="sidebar-logo"><i class="icon-calendar"></i> FilaZero</a>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="/admin/dashboard" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-chart"></i></span> Dashboard
+          </a></li>
+        <li><a href="/admin/appointments" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-calendar"></i></span> Agendamentos
+          </a></li>
+        <li><a href="/admin/services" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-scissors"></i></span> Serviços
+          </a></li>
+        <li><a href="/admin/clients" class="sidebar-link">
+            <span class="sidebar-icon"><i class="icon-users"></i></span> Clientes
+          </a></li>
+        <li><a href="/admin/settings" class="sidebar-link active">
+            <span class="sidebar-icon"><i class="icon-settings"></i></span> Configurações
+          </a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="logout()">Sair</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <button class="mobile-sidebar-toggle" onclick="toggleSidebar()"><i class="icon-menu"></i></button>
+        <h1 class="admin-title">Configurações</h1>
+        <div class="admin-actions">
+          <button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <form id="settings-form" onsubmit="saveSettings(event)">
+          <!-- Informações do Negócio -->
+          <div class="card mb-4">
+            <h3 class="mb-3">Informações do Negócio</h3>
+
+            <div class="form-group">
+              <label class="form-label">Nome do Negócio</label>
+              <input type="text" id="business-name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Descrição (opcional)</label>
+              <input type="text" id="business-description" class="form-control">
+            </div>
+
+            <div class="grid grid-2">
+              <div class="form-group">
+                <label class="form-label">Telefone (opcional)</label>
+                <input type="tel" id="business-phone" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">E-mail (opcional)</label>
+                <input type="email" id="business-email" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Endereço (opcional)</label>
+              <input type="text" id="business-address" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Número de Funcionários</label>
+              <input type="number" id="employee-count" class="form-control" min="1" value="1" required>
+              <small class="text-muted">Define quantos clientes podem ser atendidos ao mesmo tempo. Ex: 2 funcionários = até 2 agendamentos simultâneos</small>
+            </div>
+          </div>
+
+          <!-- Página Sobre -->
+          <div class="card mb-4">
+            <h3 class="mb-3">Página Sobre</h3>
+
+            <div class="form-group">
+              <label class="form-label">Texto sobre o negócio (opcional)</label>
+              <textarea id="about-text" class="form-control" rows="6"
+                placeholder="Descreva seu negócio, missão e valores..."></textarea>
+              <small class="text-muted">Este texto aparecerá na página "Sobre" do site</small>
+            </div>
+          </div>
+
+          <!-- Horários de Funcionamento -->
+          <div class="card mb-4">
+            <h3 class="mb-3">Horários de Funcionamento</h3>
+
+            <div id="working-hours">
+              <div class="grid grid-3 mb-3">
+                <label class="form-label"><strong>Dia</strong></label>
+                <label class="form-label"><strong>Abertura</strong></label>
+                <label class="form-label"><strong>Fechamento</strong></label>
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Segunda-feira</label>
+                <input type="time" id="monday-start" class="form-control">
+                <input type="time" id="monday-end" class="form-control">
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Terça-feira</label>
+                <input type="time" id="tuesday-start" class="form-control">
+                <input type="time" id="tuesday-end" class="form-control">
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Quarta-feira</label>
+                <input type="time" id="wednesday-start" class="form-control">
+                <input type="time" id="wednesday-end" class="form-control">
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Quinta-feira</label>
+                <input type="time" id="thursday-start" class="form-control">
+                <input type="time" id="thursday-end" class="form-control">
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Sexta-feira</label>
+                <input type="time" id="friday-start" class="form-control">
+                <input type="time" id="friday-end" class="form-control">
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Sábado</label>
+                <input type="time" id="saturday-start" class="form-control">
+                <input type="time" id="saturday-end" class="form-control">
+              </div>
+
+              <div class="grid grid-3 mb-2">
+                <label class="form-label">Domingo</label>
+                <input type="time" id="sunday-start" class="form-control">
+                <input type="time" id="sunday-end" class="form-control">
+              </div>
+            </div>
+            <small class="text-muted">Deixe em branco para dias que não trabalha</small>
+          </div>
+
+          <!-- Dias Excluídos (Feriados) -->
+          <div class="card mb-4">
+            <h3 class="mb-3">Dias Excluídos (Feriados)</h3>
+
+            <div class="form-group">
+              <label class="form-label">Adicionar nova data excluída</label>
+              <div class="grid grid-2">
+                <input type="date" id="new-excluded-date" class="form-control">
+                <input type="text" id="new-excluded-reason" class="form-control" placeholder="Motivo (ex: Natal)">
+              </div>
+              <button type="button" class="btn btn-secondary mt-2" onclick="addExcludedDate()">Adicionar</button>
+            </div>
+
+            <div id="excluded-dates-list" class="mt-3">
+              <!-- Lista de datas excluídas será carregada aqui -->
+            </div>
+          </div>
+
+          <!-- Botões -->
+          <div class="text-right">
+            <button type="submit" class="btn btn-accent">Salvar Configurações</button>
+          </div>
+        </form>
+
+        <!-- Segurança e Acesso -->
+        <form id="credentials-form" onsubmit="updateCredentials(event)">
+          <div class="card mt-4">
+            <h3 class="mb-3"><i class="icon-settings"></i> Segurança e Acesso</h3>
+            <p class="text-muted mb-3">Altere suas credenciais de acesso ao painel administrativo</p>
+
+            <div class="form-group">
+              <label class="form-label">Novo Usuário</label>
+              <input type="text" id="new-username" class="form-control" placeholder="Digite o novo nome de usuário">
+              <small class="text-muted">
+                <strong>Importante:</strong>
+                <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
+                  <li>Não use espaços no nome de usuário</li>
+                  <li>Mínimo de 3 caracteres</li>
+                  <li>Use apenas letras, números e underscore (_)</li>
+                  <li>Evite caracteres especiais</li>
+                </ul>
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nova Senha</label>
+              <input type="password" id="new-password" class="form-control" placeholder="Digite a nova senha">
+              <small class="text-muted">
+                <strong>Requisitos de segurança:</strong>
+                <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
+                  <li>Não use espaços na senha</li>
+                  <li>Mínimo de 6 caracteres</li>
+                  <li>Recomendado: combine letras maiúsculas, minúsculas e números</li>
+                  <li>Use uma senha forte e única</li>
+                  <li>Anote suas credenciais em local seguro!</li>
+                </ul>
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirmar Nova Senha</label>
+              <input type="password" id="confirm-password" class="form-control" placeholder="Digite a senha novamente">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Senha Atual (para confirmar alterações)</label>
+              <input type="password" id="current-password" class="form-control" placeholder="Digite sua senha atual"
+                required>
+              <small class="text-muted">Necessário para confirmar sua identidade</small>
+            </div>
+
+            <div class="text-right">
+              <button type="submit" class="btn btn-primary">Atualizar Credenciais</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/admin.js"></script>
+  <script>
+    async function loadSettings() {
+      try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+
+        document.getElementById('business-name').value = settings.business_name || '';
+        document.getElementById('business-description').value = settings.business_description || '';
+        document.getElementById('business-phone').value = settings.business_phone || '';
+        document.getElementById('business-email').value = settings.business_email || '';
+        document.getElementById('business-address').value = settings.business_address || '';
+        document.getElementById('about-text').value = settings.about_text || '';
+        document.getElementById('employee-count').value = settings.employee_count || 1;
+
+        // Carregar horários de funcionamento
+        if (settings.working_hours) {
+          const hours = settings.working_hours;
+          const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+          days.forEach(day => {
+            if (hours[day]) {
+              document.getElementById(`${day}-start`).value = hours[day].start || '';
+              document.getElementById(`${day}-end`).value = hours[day].end || '';
+            }
+          });
+        }
+
+        // Carregar datas excluídas
+        loadExcludedDates();
+      } catch (error) {
+        console.error('Erro ao carregar configurações:', error);
+        showNotification('Erro ao carregar configurações', 'error');
+      }
+    }
+
+    async function loadExcludedDates() {
+      try {
+        const response = await fetch('/api/excluded-dates');
+        const dates = await response.json();
+
+        const container = document.getElementById('excluded-dates-list');
+
+        if (dates.length === 0) {
+          container.innerHTML = '<p class="text-muted">Nenhuma data excluída cadastrada</p>';
+          return;
+        }
+
+        container.innerHTML = dates.map(date => `
+          <div class="excluded-date-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px;">
+            <div>
+              <strong>${formatDate(date.excluded_date)}</strong>
+              ${date.reason ? `<span style="color: #666; margin-left: 10px;">- ${date.reason}</span>` : ''}
+            </div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeExcludedDate(${date.id})">Remover</button>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Erro ao carregar datas excluídas:', error);
+      }
+    }
+
+    async function addExcludedDate() {
+      const dateInput = document.getElementById('new-excluded-date');
+      const reasonInput = document.getElementById('new-excluded-reason');
+
+      if (!dateInput.value) {
+        showNotification('Selecione uma data', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/excluded-dates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            excluded_date: dateInput.value,
+            reason: reasonInput.value
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('Data excluída adicionada!', 'success');
+          dateInput.value = '';
+          reasonInput.value = '';
+          loadExcludedDates();
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar data excluída:', error);
+        showNotification('Erro ao adicionar data excluída', 'error');
+      }
+    }
+
+    async function removeExcludedDate(id) {
+      if (!confirm('Deseja remover esta data excluída?')) return;
+
+      try {
+        const response = await fetch(`/api/excluded-dates/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('Data removida!', 'success');
+          loadExcludedDates();
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao remover data excluída:', error);
+        showNotification('Erro ao remover data excluída', 'error');
+      }
+    }
+
+    async function saveSettings(event) {
+      event.preventDefault();
+
+      // Coletar horários de funcionamento
+      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+      const workingHours = {};
+
+      days.forEach(day => {
+        workingHours[day] = {
+          start: document.getElementById(`${day}-start`).value || null,
+          end: document.getElementById(`${day}-end`).value || null
+        };
+      });
+
+      const data = {
+        business_name: document.getElementById('business-name').value,
+        business_description: document.getElementById('business-description').value,
+        business_phone: document.getElementById('business-phone').value,
+        business_email: document.getElementById('business-email').value,
+        business_address: document.getElementById('business-address').value,
+        about_text: document.getElementById('about-text').value,
+        working_hours: workingHours,
+        employee_count: parseInt(document.getElementById('employee-count').value) || 1
+      };
+
+      try {
+        const response = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('Configurações salvas com sucesso!', 'success');
+          // Atualizar informações na página
+          loadBusinessSettings();
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao salvar configurações:', error);
+        showNotification('Erro ao salvar configurações', 'error');
+      }
+    }
+
+    async function updateCredentials(event) {
+      event.preventDefault();
+
+      const newUsername = document.getElementById('new-username').value.trim();
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const currentPassword = document.getElementById('current-password').value;
+
+      // Validações
+      if (!currentPassword) {
+        showNotification('Digite sua senha atual para confirmar', 'error');
+        return;
+      }
+
+      if (!newUsername && !newPassword) {
+        showNotification('Preencha pelo menos um campo (usuário ou senha)', 'error');
+        return;
+      }
+
+      // Validar novo usuário
+      if (newUsername) {
+        if (newUsername.includes(' ')) {
+          showNotification('O nome de usuário não pode conter espaços!', 'error');
+          return;
+        }
+        if (newUsername.length < 3) {
+          showNotification('O nome de usuário deve ter no mínimo 3 caracteres!', 'error');
+          return;
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+          showNotification('Use apenas letras, números e underscore no usuário!', 'error');
+          return;
+        }
+      }
+
+      // Validar nova senha
+      if (newPassword) {
+        if (newPassword.includes(' ')) {
+          showNotification('A senha não pode conter espaços!', 'error');
+          return;
+        }
+        if (newPassword.length < 6) {
+          showNotification('A senha deve ter no mínimo 6 caracteres!', 'error');
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showNotification('As senhas não coincidem!', 'error');
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch('/api/update-credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            newUsername: newUsername || undefined,
+            newPassword: newPassword || undefined,
+            currentPassword: currentPassword
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showNotification('Credenciais atualizadas com sucesso!', 'success');
+
+          // Não registrar credenciais ou senhas no console do navegador.
+          // Limpar campos
+          document.getElementById('new-username').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('confirm-password').value = '';
+          document.getElementById('current-password').value = '';
+
+          // Redirecionar para login após 2 segundos
+          setTimeout(() => {
+            window.location.href = '/admin/login';
+          }, 2000);
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar credenciais:', error);
+        showNotification('Erro ao atualizar credenciais', 'error');
+      }
+    }
+
+    loadSettings();
+  </script>
+</body>
+
+</html>

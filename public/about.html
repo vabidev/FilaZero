@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sobre - FilaZero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/icons.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/" class="navbar-logo"><i class="icon-calendar"></i> FilaZero</a>
+      <div class="navbar-actions-mobile">
+        <button class="notification-bell-mobile" onclick="openNotifications(event)" title="Notificações">
+          <i class="icon-bell"></i>
+          <span id="notification-badge-mobile" class="notification-badge"></span>
+        </button>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()"><i class="icon-menu"></i></button>
+      </div>
+      <ul class="navbar-menu">
+        <li><a href="/" class="navbar-link">Início</a></li>
+        <li><a href="/agendar" class="navbar-link">Agendar</a></li>
+        <li><a href="/sobre" class="navbar-link active">Sobre</a></li>
+        <li><a href="/contato" class="navbar-link">Contato</a></li>
+        <li class="notification-desktop">
+          <button class="notification-bell" onclick="openNotifications(event)" title="Notificações">
+            <i class="icon-bell"></i>
+            <span id="notification-badge" class="notification-badge"></span>
+          </button>
+        </li>
+        <li><button class="theme-toggle" onclick="toggleTheme()"><i class="icon-moon"></i></button></li>
+      </ul>
+      <div id="notifications-dropdown" class="notifications-dropdown">
+        <div class="notifications-header">
+          <h3 class="notifications-title">Notificações</h3>
+          <button class="mark-all-read-btn" onclick="markAllNotificationsAsRead()">Marcar todas como lidas</button>
+        </div>
+        <div id="notifications-list" class="notifications-list"></div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="container" style="max-width: 800px;">
+      <h1 class="section-title">Sobre Nós</h1>
+
+      <div class="card">
+        <div id="about-content">
+          <p>Somos uma empresa dedicada a oferecer os melhores serviços para nossos clientes.</p>
+          <p>Nossa missão é proporcionar experiências excepcionais através de atendimento de qualidade e
+            profissionalismo.</p>
+        </div>
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="/agendar" class="btn btn-accent">Agendar Agora</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="footer-text business-name">FilaZero</p>
+      <p class="footer-text">&copy; 2026 Projeto open source sob licença MIT</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+  <script>
+    async function loadAboutContent() {
+      try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+
+        if (settings.about_text) {
+          const aboutContent = document.getElementById('about-content');
+          // Substituir quebras de linha por parágrafos
+          const paragraphs = settings.about_text.split('\n\n').filter(p => p.trim());
+          aboutContent.innerHTML = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+        }
+      } catch (error) {
+        console.error('Erro ao carregar conteúdo sobre:', error);
+      }
+    }
+
+    loadBusinessSettings();
+    loadAboutContent();
+  </script>
+
+  <script src="/js/notifications.js"></script>
+  <script>
+    // Marcar todas notificações como lidas
+    function markAllNotificationsAsRead() {
+      const phone = getCurrentUserPhone();
+      if (phone) {
+        markAllAsRead(phone);
+        renderNotifications();
+      }
+    }
+  </script>
+</body>
+
+</html>
